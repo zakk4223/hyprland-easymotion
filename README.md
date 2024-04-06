@@ -1,6 +1,8 @@
 # hyprEasymotion
 Plugin to enable 'easymotion' navigation. Inspired by Xmonad easymotion (which is in turn inspired by vim-easymotion)
 
+https://github.com/zakk4223/hyprland-easymotion/assets/22642/9382b23e-efbd-466c-b071-127a53f0c48b
+
 # Configuration
 Easymotion is basically a single dispatcher that brings up window labels and then allows you to execute a user-defined command when one of those labels is typed.
 
