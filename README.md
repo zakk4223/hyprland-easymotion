@@ -50,7 +50,7 @@ plugin {
 
 Every one of these variables is also settable via the dispatcher, so you can create multiple dispatchers that look different based on function.
 
-`bind = SUPER, z, easymotion, bgcolor:rgba(ff0000ff);bordersize=5;action:hyprctl dispatch closewindow address:{}`
+`bind = SUPER, z, easymotion, bgcolor:rgba(ff0000ff);bordersize:5;action:hyprctl dispatch closewindow address:{}`
 
 ### IMPORTANT 
 The easymotion arguments are separated by a semicolon, not a comma. (gap/padding format uses commas :/)
