@@ -1,0 +1,12 @@
+[repository]
+name = "hyprland-easymotion"
+authors = ["Zakk"]
+
+
+[hyprEasymotion]
+description = "Easymotion"
+authors = ["Zakk"]
+output = "hypreasymotion.so"
+build = [
+	"make all"
+]
