@@ -33,7 +33,7 @@ plugin {
     #monitor scaling. This is the same format as hyprland's gaps_in/gaps_out
     textpadding=0
 
-    #size of the border around the label box
+    #size of the border around the label box. A border size of zero disables border rendering.
     bordersize=0
 
     #color of the border. takes the same format as hyprland's border (so it can be a gradient)
