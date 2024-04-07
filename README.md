@@ -6,7 +6,7 @@ https://github.com/zakk4223/hyprland-easymotion/assets/22642/9382b23e-efbd-466c-
 # Configuration
 Easymotion is basically a single dispatcher that brings up window labels and then allows you to execute a user-defined command when one of those labels is typed.
 
-`bind=SUPER,z,action:hyprctl dispatch focuswindow address:{}`
+`bind = SUPER, z, easymotion, action:hyprctl dispatch focuswindow address:{}`
 
 This bind will bring up easymotion with SUPER-z. Once you select a window the window
 will focus. If you want to change the command, the selected window's address is substituted where "{}" occurs. 
@@ -50,7 +50,7 @@ plugin {
 
 Every one of these variables is also settable via the dispatcher, so you can create multiple dispatchers that look different based on function.
 
-`bind=SUPER,z,bgcolor=rgba(ff0000ff);bordersize=5;action:hyprctl dispatch closewindow address:{}`
+`bind = SUPER, z, easymotion, bgcolor:rgba(ff0000ff);bordersize:5;action:hyprctl dispatch closewindow address:{}`
 
 ### IMPORTANT 
 The easymotion arguments are separated by a semicolon, not a comma. (gap/padding format uses commas :/)
