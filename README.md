@@ -30,7 +30,8 @@ plugin {
     textfont=Sans
     
     #padding around the text (inside the label box) size in pixels, adjusted for
-    #monitor scaling. This is the same format as hyprland's gaps_in/gaps_out
+    #monitor scaling. This is the same format as hyprland's gapsin/gapsout workspace layout rule
+    #example: textpadding=2 5 5 2 (spaces not commas)
     textpadding=0
 
     #size of the border around the label box. A border size of zero disables border rendering.
@@ -50,10 +51,7 @@ plugin {
 
 Every one of these variables is also settable via the dispatcher, so you can create multiple dispatchers that look different based on function.
 
-`bind = SUPER, z, easymotion, bgcolor:rgba(ff0000ff);bordersize:5;action:hyprctl dispatch closewindow address:{}`
-
-### IMPORTANT 
-The easymotion arguments are separated by a semicolon, not a comma. (gap/padding format uses commas :/)
+`bind = SUPER, z, easymotion, bgcolor:rgba(ff0000ff),bordersize:5,action:hyprctl dispatch closewindow address:{}`
 
 # Installing
 

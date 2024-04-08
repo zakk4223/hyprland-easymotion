@@ -111,7 +111,7 @@ void easymotionDispatch(std::string args)
 		static auto *const ROUNDING = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:rounding")->getDataStaticPtr();
 		static auto *const MOTIONKEYS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionkeys")->getDataStaticPtr();
 
-	CVarList emargs(args, 0, ';');
+	CVarList emargs(args, 0, ',');
 	SMotionActionDesc actionDesc;
 
 	actionDesc.textSize = **TEXTSIZE;
@@ -144,14 +144,14 @@ void easymotionDispatch(std::string args)
 		} else if (kv[0] == "textfont") {
 			actionDesc.textFont = kv[1];
 		} else if (kv[0] == "textpadding") {
-			CVarList padVars = CVarList(kv[1]);
+			CVarList padVars = CVarList(kv[1], 0, 's');
 			actionDesc.boxPadding.parseGapData(padVars);
 		} else if (kv[0] == "rounding") {
 			actionDesc.rounding = configStringToInt(kv[1]);
 		} else if (kv[0] == "bordersize") {
 			actionDesc.borderSize = configStringToInt(kv[1]);
 		} else if (kv[0] == "bordercolor") {
-			CVarList varlist(kv[1], 0, ' ');
+			CVarList varlist(kv[1], 0, 's');
 			actionDesc.borderColor.m_vColors.clear();
 			actionDesc.borderColor.m_fAngle = 0;
 			if(!parseBorderGradient(kv[1], &actionDesc.borderColor)) {

@@ -68,13 +68,12 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	PangoRectangle ink_rect;
 	PangoRectangle logical_rect;
 	pango_layout_get_pixel_extents(layout, &ink_rect, &logical_rect);
-	Debug::log(LOG, "INK {} {} {} {} LOGICAL {} {} {} {}", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height, logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
 
 	layoutWidth = ink_rect.width+m_iPaddingLeft+m_iPaddingRight;
 	layoutHeight = ink_rect.height+m_iPaddingTop+m_iPaddingBottom;
 
-	bufferSize.x = layoutWidth*scale;
-	bufferSize.y = layoutHeight*scale;
+	bufferSize.x = layoutWidth;
+	bufferSize.y = layoutHeight;
 
 	const auto CAIROSURFACE = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, bufferSize.x, bufferSize.y);
 	const auto CAIRO = cairo_create(CAIROSURFACE);
@@ -83,7 +82,7 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	cairo_set_operator(CAIRO, CAIRO_OPERATOR_CLEAR);
 	cairo_paint(CAIRO);
 	cairo_restore(CAIRO);
-	cairo_move_to(CAIRO, -ink_rect.x+m_iPaddingLeft, -ink_rect.y+m_iPaddingTop);
+	cairo_move_to(CAIRO, -ink_rect.x+(m_iPaddingLeft), -ink_rect.y+(m_iPaddingTop));
 	cairo_set_source_rgba(CAIRO, textColor.r, textColor.g, textColor.b, textColor.a);
 	pango_cairo_show_layout(CAIRO, layout);
 	g_object_unref(layout);
