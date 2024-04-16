@@ -1,6 +1,10 @@
 [repository]
 name = "hyprland-easymotion"
 authors = ["Zakk"]
+commit_pins = [
+	["e93fbd7c4f991cb8ef03e433ccc4d43587923e15", "3226c48a18a88790711c9bf04af3c08ae989f370"]
+]
+
 
 
 [hyprEasymotion]
