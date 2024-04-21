@@ -168,13 +168,16 @@ void easymotionDispatch(std::string args)
 	for (auto &w : g_pCompositor->m_vWindows) {
 		for (auto &m : g_pCompositor->m_vMonitors) {
 			if (w->m_pWorkspace == m->activeWorkspace) {
+					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
+						continue;
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w.get(), &actionDesc, lstr);
 			}
 		}
 	}
 
-	HyprlandAPI::invokeHyprctlCommand("dispatch", "submap __easymotionsubmap__");
+	if (!g_pGlobalState->motionLabels.empty())
+		HyprlandAPI::invokeHyprctlCommand("dispatch", "submap __easymotionsubmap__");
 }
 	
 bool oneasymotionKeypress(void *self, std::any data) {
@@ -225,10 +228,10 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::addDispatcher(PHANDLE, "easymotion", easymotionDispatch);
 		HyprlandAPI::addDispatcher(PHANDLE, "easymotionaction", easymotionActionDispatch);
 		HyprlandAPI::addDispatcher(PHANDLE, "easymotionexit", easymotionExitDispatch);
-		HyprlandAPI::registerCallbackDynamic(PHANDLE, "keyPress", [&](void *self, SCallbackInfo &info, std::any data) {
+		static auto KPHOOK = HyprlandAPI::registerCallbackDynamic(PHANDLE, "keyPress", [&](void *self, SCallbackInfo &info, std::any data) {
 			info.cancelled = oneasymotionKeypress(self, data);
 	});
-		HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {addEasyMotionKeybinds();});
+	  static auto CRHOOK = HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {addEasyMotionKeybinds();});
     HyprlandAPI::reloadConfig();
 
 
