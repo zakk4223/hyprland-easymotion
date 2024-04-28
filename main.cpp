@@ -47,7 +47,7 @@ void addEasyMotionKeybinds()
 }
 
 
-void addLabelToWindow(CWindow *window, SMotionActionDesc *actionDesc, std::string &label)
+void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::string &label)
 {
 	std::unique_ptr<CHyprEasyLabel> motionlabel = std::make_unique<CHyprEasyLabel>(window, actionDesc);
 	motionlabel.get()->m_szLabel = label;
@@ -171,7 +171,7 @@ void easymotionDispatch(std::string args)
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
-					addLabelToWindow(w.get(), &actionDesc, lstr);
+					addLabelToWindow(w, &actionDesc, lstr);
 			}
 		}
 	}

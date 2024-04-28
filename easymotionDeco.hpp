@@ -9,7 +9,7 @@
 
 class CHyprEasyLabel : public IHyprWindowDecoration {
   public:
-    CHyprEasyLabel(CWindow*, SMotionActionDesc *actionDesc);
+    CHyprEasyLabel(PHLWINDOW, SMotionActionDesc *actionDesc);
     virtual ~CHyprEasyLabel();
 
     virtual SDecorationPositioningInfo getPositioningInfo();
@@ -20,7 +20,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
     virtual eDecorationType            getDecorationType();
 
-    virtual void                       updateWindow(CWindow*);
+    virtual void                       updateWindow(PHLWINDOW);
 
     virtual void                       damageEntire();
 
@@ -32,7 +32,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
     virtual std::string                getDisplayName();
 
-    CWindow*                           getOwner();
+    PHLWINDOW                           getOwner();
 
 		std::string												 m_szLabel;
 		std::string  											 m_szActionCmd;
@@ -58,7 +58,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int     layoutHeight;
     SWindowDecorationExtents m_seExtents;
 
-    CWindow*                 m_pWindow = nullptr;
+    PHLWINDOW                 m_pWindow;
 
     CTexture                 m_tTextTex;
 

@@ -8,12 +8,12 @@
 
 #include "globals.hpp"
 
-CHyprEasyLabel::CHyprEasyLabel(CWindow* pWindow, SMotionActionDesc *actionDesc) : IHyprWindowDecoration(pWindow) {
+CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc) : IHyprWindowDecoration(pWindow) {
     m_pWindow = pWindow;
 
     const auto PMONITOR       = g_pCompositor->getMonitorFromID(pWindow->m_iMonitorID);
     PMONITOR->scheduledRecalc = true;
-		std::string windowAddr = std::format("0x{:x}", (uintptr_t)pWindow);
+		std::string windowAddr = std::format("0x{:x}", (uintptr_t)pWindow.get());
 		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(windowAddr));
 		m_iTextSize = actionDesc->textSize;
 	  m_cTextColor = actionDesc->textColor;
@@ -108,7 +108,7 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 
 
 void CHyprEasyLabel::draw(CMonitor* pMonitor, float a) {
-    if (!g_pCompositor->windowValidMapped(m_pWindow))
+    if (!validMapped(m_pWindow))
         return;
 
     if (!m_pWindow->m_sSpecialRenderData.decorate)
@@ -159,7 +159,7 @@ eDecorationType CHyprEasyLabel::getDecorationType() {
     return DECORATION_CUSTOM;
 }
 
-void CHyprEasyLabel::updateWindow(CWindow* pWindow) {
+void CHyprEasyLabel::updateWindow(PHLWINDOW pWindow) {
     damageEntire();
 }
 
@@ -192,6 +192,6 @@ CBox CHyprEasyLabel::assignedBoxGlobal() {
     return box.translate(WORKSPACEOFFSET);
 }
 
-CWindow* CHyprEasyLabel::getOwner() {
+PHLWINDOW CHyprEasyLabel::getOwner() {
     return m_pWindow;
 }
