@@ -96,10 +96,9 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
 
     return true;
 }
+
 void easymotionDispatch(std::string args)
 {
-
-
 		static auto *const TEXTSIZE = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textsize")->getDataStaticPtr();
 
 	  static auto *const TEXTCOLOR = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textcolor")->getDataStaticPtr();
@@ -170,6 +169,8 @@ void easymotionDispatch(std::string args)
 			if (w->m_pWorkspace == m->activeWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
+				  if (w->m_pWorkspace->m_bHasFullscreenWindow && g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w)
+					  continue;
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);
 			}
