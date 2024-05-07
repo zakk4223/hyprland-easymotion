@@ -187,14 +187,16 @@ bool oneasymotionKeypress(void *self, std::any data) {
 
 	auto map = std::any_cast<std::unordered_map<std::string, std::any>>(data);
 	std::any kany = map["keyboard"];
-	wlr_keyboard_key_event *ev = std::any_cast<wlr_keyboard_key_event *>(map["event"]);
-	SKeyboard *keyboard = std::any_cast<SKeyboard *>(kany);
+	IKeyboard::SKeyEvent ev = std::any_cast<IKeyboard::SKeyEvent>(map["event"]);
+	SP<IKeyboard>keyboard = std::any_cast<SP<IKeyboard>>(kany);
 
-	const auto KEYCODE = ev->keycode + 8;
+
+
+	const auto KEYCODE = ev.keycode + 8;
 
 	const xkb_keysym_t KEYSYM = xkb_state_key_get_one_sym(keyboard->xkbTranslationState, KEYCODE);
 
-	if (ev->state != WL_KEYBOARD_KEY_STATE_PRESSED) return false;
+	if (ev.state != WL_KEYBOARD_KEY_STATE_PRESSED) return false;
 
 	xkb_keysym_t actionKeysym = 0;
 	for (auto &ml : g_pGlobalState->motionLabels) {

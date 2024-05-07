@@ -5,6 +5,7 @@
 
 #include <hyprland/src/render/decorations/IHyprWindowDecoration.hpp>
 #include <hyprland/src/render/OpenGL.hpp>
+#include <hyprland/src/devices/IKeyboard.hpp>
 #include "globals.hpp"
 
 class CHyprEasyLabel : public IHyprWindowDecoration {
