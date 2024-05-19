@@ -39,10 +39,10 @@ void easymotionActionDispatch(std::string args)
 void addEasyMotionKeybinds()
 {
 
-		g_pKeybindManager->addKeybind(SKeybind{"escape", 0, 0, 0, "easymotionexit", "", 0, "__easymotionsubmap__", 0, 0, 0, 0, 0, 0});
+		g_pKeybindManager->addKeybind(SKeybind{"escape", {}, 0, 0, 0, {}, "easymotionexit", "", 0, "__easymotionsubmap__", 0, 0, 0, 0, 0, 0, 0});
 
 	  //catchall
-		g_pKeybindManager->addKeybind(SKeybind{"", 0, 1, 0, "", "", 0, "__easymotionsubmap__", 0, 0, 0, 0, 0, 0});
+		g_pKeybindManager->addKeybind(SKeybind{"", {}, 0, 1, 0, {}, "", "", 0, "__easymotionsubmap__", 0, 0, 0, 0, 0, 0, 0});
 
 }
 
