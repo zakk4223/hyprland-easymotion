@@ -48,6 +48,7 @@ std::string CHyprEasyLabel::getDisplayName() {
 }
 
 void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale) {
+	m_tTextTex = makeShared<CTexture>();
 	int textSize = m_iTextSize;
 	const auto scaledSize = textSize * scale;
 	const auto textColor = CColor(m_cTextColor);
@@ -88,8 +89,8 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	g_object_unref(layout);
 	cairo_surface_flush(CAIROSURFACE);
 	const auto DATA = cairo_image_surface_get_data(CAIROSURFACE);
-	m_tTextTex.allocate();
-  glBindTexture(GL_TEXTURE_2D, m_tTextTex.m_iTexID);
+	m_tTextTex->allocate();
+  glBindTexture(GL_TEXTURE_2D, m_tTextTex->m_iTexID);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -130,7 +131,7 @@ void CHyprEasyLabel::draw(CMonitor* pMonitor, float a) {
 		auto TEXTBUF = DECOBOX.size() * pMonitor->scale;
 	
 
-		if (m_tTextTex.m_iTexID == 0) {
+		if (!m_tTextTex.get()) {
 			renderMotionString(TEXTBUF, pMonitor->scale);
 		}
     CBox       motionBox = {DECOBOX.x, DECOBOX.y, layoutWidth, layoutHeight};

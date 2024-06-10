@@ -61,7 +61,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
     PHLWINDOW                 m_pWindow;
 
-    CTexture                 m_tTextTex;
+    SP<CTexture>                 m_tTextTex;
 
     bool                     m_bWindowSizeChanged = false;
 
