@@ -13,8 +13,8 @@ CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc)
 
     const auto PMONITOR       = g_pCompositor->getMonitorFromID(pWindow->m_iMonitorID);
     PMONITOR->scheduledRecalc = true;
-		std::string windowAddr = std::format("0x{:x}", (uintptr_t)pWindow.get());
-		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(windowAddr));
+		m_szWindowAddress = std::format("0x{:x}", (uintptr_t)pWindow.get());
+		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(m_szWindowAddress));
 		m_iTextSize = actionDesc->textSize;
 	  m_cTextColor = actionDesc->textColor;
 		m_cBackgroundColor = actionDesc->backgroundColor;

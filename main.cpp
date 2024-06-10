@@ -29,6 +29,7 @@ void easymotionActionDispatch(std::string args)
 {
 	for (auto &ml : g_pGlobalState->motionLabels) {
 		if (ml->m_szLabel == args) {
+			g_pEventManager->postEvent(SHyprIPCEvent{"easymotionselect", std::format("{},{}", ml->m_szWindowAddress, ml->m_szLabel)});
 			g_pKeybindManager->m_mDispatchers["exec"](ml->m_szActionCmd);
 			easymotionExitDispatch("");
 			break;

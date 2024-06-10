@@ -38,6 +38,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		std::string												 m_szLabel;
 		std::string  											 m_szActionCmd;
 		std::string												 m_szTextFont;
+	  std::string                        m_szWindowAddress;
 		int																 m_iTextSize;
 		int																 m_iPaddingTop;
 		int																 m_iPaddingBottom;
