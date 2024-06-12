@@ -22,6 +22,7 @@ void easymotionExitDispatch(std::string args)
 			ml->getOwner()->removeWindowDeco(ml);
 		}
 		HyprlandAPI::invokeHyprctlCommand("dispatch", "submap reset");
+		g_pEventManager->postEvent(SHyprIPCEvent{"easymotionexit", ""});
 
 }
 
