@@ -58,7 +58,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
   private:
 		int			layoutWidth;
 		int     layoutHeight;
-    SWindowDecorationExtents m_seExtents;
+    SBoxExtents m_seExtents;
 
     PHLWINDOW                 m_pWindow;
 
