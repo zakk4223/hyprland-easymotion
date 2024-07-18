@@ -112,7 +112,7 @@ void CHyprEasyLabel::draw(CMonitor* pMonitor, float a) {
     if (!validMapped(m_pWindow))
         return;
 
-    if (!m_pWindow->m_sSpecialRenderData.decorate)
+    if (!m_pWindow->m_sWindowData.decorate.valueOrDefault())
         return;
 
     const auto PWORKSPACE      = m_pWindow->m_pWorkspace;
