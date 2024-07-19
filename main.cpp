@@ -168,7 +168,7 @@ void easymotionDispatch(std::string args)
 
 	for (auto &w : g_pCompositor->m_vWindows) {
 		for (auto &m : g_pCompositor->m_vMonitors) {
-			if (w->m_pWorkspace == m->activeWorkspace) {
+			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
 				  if (w->m_pWorkspace->m_bHasFullscreenWindow && g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w)
