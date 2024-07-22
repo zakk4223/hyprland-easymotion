@@ -196,7 +196,7 @@ bool oneasymotionKeypress(void *self, std::any data) {
 
 	const auto KEYCODE = ev.keycode + 8;
 
-	const xkb_keysym_t KEYSYM = xkb_state_key_get_one_sym(keyboard->xkbTranslationState, KEYCODE);
+	const xkb_keysym_t KEYSYM = xkb_state_key_get_one_sym(keyboard->xkbState, KEYCODE);
 
 	if (ev.state != WL_KEYBOARD_KEY_STATE_PRESSED) return false;
 
