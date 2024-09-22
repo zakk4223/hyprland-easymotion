@@ -25,14 +25,13 @@
             "src"
             "include"
             ./Makefile
-            ./meson.build
           ];
         };
 
         # allow overriding xwayland support
         BUILT_WITH_NOXWAYLAND = false;
 
-        nativeBuildInputs = with pkgs; [meson ninja pkg-config];
+        nativeBuildInputs = with pkgs; [ninja pkg-config];
 
         buildInputs = with pkgs;
           [
