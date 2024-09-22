@@ -1,49 +1,43 @@
 {
+  description = "Easymotion, for hyprland";
+
   inputs = {
-    hyprland.url = "github:hyprwm/Hyprland";
-    nix-filter.url = "github:numtide/nix-filter";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
-  outputs = { self, hyprland, nix-filter, ... }:
-    let
-      inherit (hyprland.inputs) nixpkgs;
-      forHyprlandSystems = fn: nixpkgs.lib.genAttrs (builtins.attrNames hyprland.packages) (system: fn system nixpkgs.legacyPackages.${system});
-    in
-    {
-      packages = forHyprlandSystems
-        (system: pkgs: rec {
-          hyprfocus = pkgs.gcc13Stdenv.mkDerivation {
-            pname = "hyprland-easymotion";
-            version = "0.1";
-            src = nix-filter.lib {
-              root = ./.;
-              include = [
-                "src"
-                ./Makefile
-              ];
-            };
 
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
+    forAllSystems = function:
+      nixpkgs.lib.genAttrs [
+        "x86_64-linux"
+      ] (system: function nixpkgs.legacyPackages.${system});
+  in {
+    packages = forAllSystems (pkgs: {
+      default = self.packages.${pkgs.system}.hyprland-easymotion;
+      hyprland-easymotion = pkgs.stdenvNoCC.mkDerivation rec {
+        name = "hyprland-easymotion";
+        pname = name;
+        src = ./.;
+        nativeBuildInputs = inputs.hyprland.packages.${pkgs.system}.hyprland.nativeBuildInputs ++ [inputs.hyprland.packages.${pkgs.system}.hyprland pkgs.gcc13];
+        buildInputs = inputs.hyprland.packages.${pkgs.system}.hyprland.buildInputs;
 
-            nativeBuildInputs = with pkgs; [ pkg-config ];
+        dontUseCmakeConfigure = true;
+        dontUseMesonConfigure = true;
+        dontUseNinjaBuild = true;
+        dontUseNinjaInstall = true;
 
-            buildInputs = with pkgs; [
-              hyprland.packages.${system}.hyprland.dev
-            ]
-            ++ hyprland.packages.${system}.hyprland.buildInputs;
+        installPhase = ''
+        runHook preInstall
 
-            installPhase = ''
-              mkdir -p $out/lib
-              install ./hyprland-easymotion.so $out/lib/libhyprland-easymotion.so
-            '';
-
-            meta = with pkgs.lib; {
-              homepage = "https://github.com/zakk4223/hyprland-easymotion";
-              description = "Easymotion, for hyprland";
-              license = licenses.bsd3;
-              platforms = platforms.linux;
-            };
-
-
-          };
-        });
-    };
+        mkdir -p "$out/lib"
+        cp -r out/* "$out/lib/lib${name}.so"
+        runHook postInstall
+        '';
+      }
+    });
+  };
 }
