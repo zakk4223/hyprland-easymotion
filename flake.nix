@@ -34,7 +34,7 @@
         runHook preInstall
 
         mkdir -p "$out/lib"
-        cp -r out/* "$out/lib/lib${name}.so"
+        cp -r out/* "$out/lib/libhypreasymotion.so"
         runHook postInstall
         '';
       };
