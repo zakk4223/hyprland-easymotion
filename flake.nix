@@ -34,7 +34,7 @@
         runHook preInstall
 
         mkdir -p "$out/lib"
-        cp -r out/* "$out/lib/libhypreasymotion.so"
+        cp -r ./hypreasymotion.so "$out/lib/libhyprland-easymotion.so"
         runHook postInstall
         '';
       };
