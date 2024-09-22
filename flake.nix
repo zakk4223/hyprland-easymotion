@@ -31,7 +31,7 @@
         # allow overriding xwayland support
         BUILT_WITH_NOXWAYLAND = false;
 
-        nativeBuildInputs = with pkgs; [ninja pkg-config];
+        nativeBuildInputs = with pkgs; [pkg-config];
 
         buildInputs = with pkgs;
           [
