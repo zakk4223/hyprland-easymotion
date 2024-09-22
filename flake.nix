@@ -37,7 +37,7 @@
         cp -r out/* "$out/lib/lib${name}.so"
         runHook postInstall
         '';
-      }
+      };
     });
   };
 }
