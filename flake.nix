@@ -19,6 +19,9 @@
       hyprland-easymotion = pkgs.gcc13Stdenv.mkDerivation {
         pname = "hyprland-easymotion";
         version = "1.0.0";
+        buildPhase = ''
+        export HOME=$(pwd)
+        '';
         src = nix-filter.lib {
           root = ./.;
           include = [
