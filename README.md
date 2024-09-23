@@ -60,19 +60,31 @@ Every one of these variables is also settable via the dispatcher, so you can cre
 2. Run `hyprpm enable hyprEasymotion`
 
 ## NixOS (Flakes)
+Please note, you should *also have hyprland as a flake input*.
 Add this repo to your flake inputs:
-```Nix
+```nix
 inputs = {
+  # ...
+  hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-
-    hyprland-easymotion = {
-        url = "github:bowlbird/hyprland-easymotion";
-        inputs.hyprland.follows = "hyprland";
-    };
-
+  hyprland-easymotion = {
+    url = "github:bowlbird/hyprland-easymotion";
+    inputs.hyprland.follows = "hyprland";
+  };
+  # ...
 };
+outputs = { self, hyprland, ... } @ inputs:
+  # ...
 ```
+Add the plugin to your Hyprland Home Manager config:
+```nix
+wayland.windowManager.hyprland = {
+  # ...
+  plugins = [
+    inputs.hyprland-easymotion.packages.${pkgs.system}.hyprland-easymotion
+  ];
+  # ...
+};
 
 # TODO
 - [ ] Blur?
