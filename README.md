@@ -64,7 +64,6 @@ Please note, you should *also have hyprland as a flake input*.
 Add this repo to your flake inputs:
 ```nix
 inputs = {
-  # ...
   hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
   hyprland-easymotion = {
@@ -79,13 +78,12 @@ outputs = { self, hyprland, ... } @ inputs:
 Add the plugin to your Hyprland Home Manager config:
 ```nix
 wayland.windowManager.hyprland = {
-  # ...
   plugins = [
     inputs.hyprland-easymotion.packages.${pkgs.system}.hyprland-easymotion
   ];
   # ...
 };
-
+```
 # TODO
 - [ ] Blur?
 - [ ] Allow multi-letter labels?
