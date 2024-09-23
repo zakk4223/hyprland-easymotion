@@ -1,3 +1,5 @@
+# Nix config informed by VirtCode's 'Dynamic Cursor'
+# https://github.com/VirtCode/hypr-dynamic-cursors
 {
   description = "Easymotion, for hyprland";
 
