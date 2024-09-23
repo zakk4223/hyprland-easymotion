@@ -67,7 +67,7 @@ inputs = {
   hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
   hyprland-easymotion = {
-    url = "github:bowlbird/hyprland-easymotion";
+    url = "github:zakk4223/hyprland-easymotion";
     inputs.hyprland.follows = "hyprland";
   };
   # ...
