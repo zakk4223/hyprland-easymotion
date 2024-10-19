@@ -9,7 +9,7 @@ Easymotion is basically a single dispatcher that brings up window labels and the
 `bind = SUPER, z, easymotion, action:hyprctl dispatch focuswindow address:{}`
 
 This bind will bring up easymotion with SUPER-z. Once you select a window the window
-will focus. If you want to change the command, the selected window's address is substituted where "{}" occurs. 
+will focus. If you want to change the command, the selected window's address is substituted where "{}" occurs.
 
 
 You can configure the appearance of the labels. Defaults are as follows:
@@ -28,7 +28,7 @@ plugin {
 
     #font to use for the label. This is passed directly to the pango font description
     textfont=Sans
-    
+
     #padding around the text (inside the label box) size in pixels, adjusted for
     #monitor scaling. This is the same format as hyprland's gapsin/gapsout workspace layout rule
     #example: textpadding=2 5 5 2 (spaces not commas)
@@ -59,10 +59,34 @@ Every one of these variables is also settable via the dispatcher, so you can cre
 1. Run `hyprpm add https://github.com/zakk4223/hyprland-easymotion` and wait for hyprpm to build the plugin.
 2. Run `hyprpm enable hyprEasymotion`
 
+## NixOS (Flakes)
+Please note, you should *also have hyprland as a flake input*.
+Add this repo to your flake inputs:
+```nix
+inputs = {
+  hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
+  hyprland-easymotion = {
+    url = "github:zakk4223/hyprland-easymotion";
+    inputs.hyprland.follows = "hyprland";
+  };
+  # ...
+};
+outputs = { self, hyprland, ... } @ inputs:
+  # ...
+```
+Add the plugin to your Hyprland Home Manager config:
+```nix
+wayland.windowManager.hyprland = {
+  plugins = [
+    inputs.hyprland-easymotion.packages.${pkgs.system}.hyprland-easymotion
+  ];
+  # ...
+};
+```
 # TODO
-- [ ] Blur? 
-- [ ] Allow multi-letter labels? 
-- [ ] Fixed/static label box sizing 
+- [ ] Blur?
+- [ ] Allow multi-letter labels?
+- [ ] Fixed/static label box sizing
 - [ ] Location of label in window (edges etc)
 - [ ] Auto label placement that tries to avoid being occluded
