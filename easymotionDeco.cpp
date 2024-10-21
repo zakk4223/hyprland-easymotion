@@ -108,7 +108,7 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 }
 
 
-void CHyprEasyLabel::draw(CMonitor* pMonitor, float a) {
+void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float a) {
     if (!validMapped(m_pWindow))
         return;
 

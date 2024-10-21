@@ -3,9 +3,9 @@ name = "hyprland-easymotion"
 authors = ["Zakk"]
 commit_pins = [
 	["e93fbd7c4f991cb8ef03e433ccc4d43587923e15", "3226c48a18a88790711c9bf04af3c08ae989f370"],
-	["cba1ade848feac44b2eda677503900639581c3f4", "b96fc643b4b262b76515e8a40cdf35b07adc8686"]
+	["cba1ade848feac44b2eda677503900639581c3f4", "b96fc643b4b262b76515e8a40cdf35b07adc8686"],
+  ["abb0a02a256041b0cd1b1d68de8c8d6de70a5b51", "0c7a7e2d569eeed9d6025f3eef4ea0690d90845d"]
 ]
-
 [hyprEasymotion]
 description = "Easymotion"
 authors = ["Zakk"]
