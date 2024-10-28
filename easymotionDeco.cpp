@@ -11,7 +11,7 @@
 CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc) : IHyprWindowDecoration(pWindow) {
     m_pWindow = pWindow;
 
-    const auto PMONITOR       = g_pCompositor->getMonitorFromID(pWindow->m_iMonitorID);
+    const auto PMONITOR       = pWindow->m_pMonitor.lock();
     PMONITOR->scheduledRecalc = true;
 		m_szWindowAddress = std::format("0x{:x}", (uintptr_t)pWindow.get());
 		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(m_szWindowAddress));
