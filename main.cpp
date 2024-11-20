@@ -130,7 +130,7 @@ void easymotionDispatch(std::string args)
 	actionDesc.motionKeys = *MOTIONKEYS;
 
 
-	for(int i = 0; i < emargs.size(); i++)
+	for(size_t i = 0; i < emargs.size(); i++)
 	{
 
 		CVarList kv(emargs[i], 2, ':');
@@ -171,8 +171,10 @@ void easymotionDispatch(std::string args)
 			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
-				  if (w->m_pWorkspace->m_bHasFullscreenWindow && g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w)
-					  continue;
+                    if (w->m_pWorkspace->m_bHasFullscreenWindow && 
+                        g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w) {
+                        continue;
+                    }
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);
 			}
