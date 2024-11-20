@@ -108,7 +108,7 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 }
 
 
-void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float a) {
+void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
     if (!validMapped(m_pWindow))
         return;
 
@@ -134,7 +134,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float a) {
 		if (!m_tTextTex.get()) {
 			renderMotionString(TEXTBUF, pMonitor->scale);
 		}
-    CBox       motionBox = {DECOBOX.x, DECOBOX.y, layoutWidth, layoutHeight};
+    CBox       motionBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
     motionBox.translate(pMonitor->vecPosition*-1).scale(pMonitor->scale).round();
 
     if (motionBox.w < 1 || motionBox.h < 1)
@@ -143,7 +143,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float a) {
     g_pHyprOpenGL->renderRect(&motionBox, m_cBackgroundColor, scaledRounding);
 		
 		if (m_iBorderSize) {
-    	CBox       borderBox = {DECOBOX.x, DECOBOX.y, layoutWidth, layoutHeight};
+    	CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
     	borderBox.translate(pMonitor->vecPosition*-1).scale(pMonitor->scale).round();
 			if (borderBox.w >= 1 && borderBox.h >= 1) {
 				g_pHyprOpenGL->renderBorder(&borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
