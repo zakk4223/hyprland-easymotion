@@ -172,7 +172,7 @@ void easymotionDispatch(std::string args)
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
                     if (w->m_pWorkspace->m_bHasFullscreenWindow && 
-                        g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w) {
+                        w->m_pWorkspace->getFullscreenWindow() != w) {
                         continue;
                     }
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
