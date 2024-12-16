@@ -85,7 +85,7 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
         }
 
         try {
-            DATA->m_vColors.push_back(CColor(configStringToInt(var)));
+            DATA->m_vColors.push_back(CColor(configStringToInt(var).value_or(0)));
         } catch (std::exception& e) {
             Debug::log(WARN, "Error parsing gradient {}", V);
         }
@@ -137,20 +137,20 @@ void easymotionDispatch(std::string args)
 		if (kv[0] == "action") {
 			actionDesc.commandString = kv[1];
 		} else if (kv[0] == "textsize") {
-			actionDesc.textSize = configStringToInt(kv[1]);
+			actionDesc.textSize = configStringToInt(kv[1]).value_or(15);
 		} else if (kv[0] == "textcolor") {
-			actionDesc.textColor = CColor(configStringToInt(kv[1]));
+			actionDesc.textColor = CColor(configStringToInt(kv[1]).value_or(0xffffffff));
 		} else if (kv[0] == "bgcolor") {
-			actionDesc.backgroundColor = CColor(configStringToInt(kv[1]));
+			actionDesc.backgroundColor = CColor(configStringToInt(kv[1]).value_or(0));
 		} else if (kv[0] == "textfont") {
 			actionDesc.textFont = kv[1];
 		} else if (kv[0] == "textpadding") {
 			CVarList padVars = CVarList(kv[1], 0, 's');
 			actionDesc.boxPadding.parseGapData(padVars);
 		} else if (kv[0] == "rounding") {
-			actionDesc.rounding = configStringToInt(kv[1]);
+			actionDesc.rounding = configStringToInt(kv[1]).value_or(0);
 		} else if (kv[0] == "bordersize") {
-			actionDesc.borderSize = configStringToInt(kv[1]);
+			actionDesc.borderSize = configStringToInt(kv[1]).value_or(0);
 		} else if (kv[0] == "bordercolor") {
 			CVarList varlist(kv[1], 0, 's');
 			actionDesc.borderColor.m_vColors.clear();
@@ -172,7 +172,8 @@ void easymotionDispatch(std::string args)
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
                     if (w->m_pWorkspace->m_bHasFullscreenWindow && 
-                        g_pCompositor->getFullscreenWindowOnWorkspace(w->workspaceID()) != w) {
+
+                        w->m_pWorkspace->getFullscreenWindow() != w) {
                         continue;
                     }
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
@@ -221,8 +222,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textsize", Hyprlang::INT{15});
 
-		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textcolor", Hyprlang::INT{configStringToInt("rgba(ffffffff)")});
-		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bgcolor", Hyprlang::INT{configStringToInt("rgba(000000ff)")});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textcolor", Hyprlang::INT{configStringToInt("rgba(ffffffff)").value_or(0xffffffff)});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bgcolor", Hyprlang::INT{configStringToInt("rgba(000000ff)").value_or(0xff)});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textfont", Hyprlang::STRING{"Sans"});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textpadding", Hyprlang::STRING{"0"});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bordersize", Hyprlang::INT{0});
