@@ -172,6 +172,7 @@ void easymotionDispatch(std::string args)
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
                     if (w->m_pWorkspace->m_bHasFullscreenWindow && 
+
                         w->m_pWorkspace->getFullscreenWindow() != w) {
                         continue;
                     }

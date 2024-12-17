@@ -1,0 +1,9 @@
+CompileCommandsDir: build
+
+CompileFlags:
+  Add:
+    # 标准编译器选项
+    - -std=c++23
+    - --stdlib=libc++
+    - -I/usr/include/libdrm/
+    - -I/usr/include/pixman-1/
