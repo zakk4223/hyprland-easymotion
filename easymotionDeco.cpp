@@ -51,7 +51,7 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	m_tTextTex = makeShared<CTexture>();
 	int textSize = m_iTextSize;
 	const auto scaledSize = textSize * scale;
-	const auto textColor = CColor(m_cTextColor);
+	const auto textColor = CHyprColor(m_cTextColor);
 
 	const auto LAYOUTSURFACE = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 0, 0);
 	const auto LAYOUTCAIRO = cairo_create(LAYOUTSURFACE);

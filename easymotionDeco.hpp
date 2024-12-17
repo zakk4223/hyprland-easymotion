@@ -46,8 +46,8 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int																 m_iPaddingRight;
 		int 															 m_iRounding;
 
-		CColor		  											 m_cTextColor;
-		CColor														 m_cBackgroundColor;
+		CHyprColor		  											 m_cTextColor;
+		CHyprColor														 m_cBackgroundColor;
 		int																 m_iBorderSize;
 		CGradientValueData								 m_cBorderGradient;
 
@@ -66,7 +66,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
     bool                     m_bWindowSizeChanged = false;
 
-    void                     renderText(CTexture& out, const std::string& text, const CColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
+    void                     renderText(CTexture& out, const std::string& text, const CHyprColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
     CBox                     assignedBoxGlobal();
 		void 										 renderMotionString(Vector2D& bufferSize, const float scale);
 

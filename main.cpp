@@ -85,7 +85,7 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
         }
 
         try {
-            DATA->m_vColors.push_back(CColor(configStringToInt(var).value_or(0)));
+            DATA->m_vColors.push_back(CHyprColor(configStringToInt(var).value_or(0)));
         } catch (std::exception& e) {
             Debug::log(WARN, "Error parsing gradient {}", V);
         }
@@ -139,9 +139,9 @@ void easymotionDispatch(std::string args)
 		} else if (kv[0] == "textsize") {
 			actionDesc.textSize = configStringToInt(kv[1]).value_or(15);
 		} else if (kv[0] == "textcolor") {
-			actionDesc.textColor = CColor(configStringToInt(kv[1]).value_or(0xffffffff));
+			actionDesc.textColor = CHyprColor(configStringToInt(kv[1]).value_or(0xffffffff));
 		} else if (kv[0] == "bgcolor") {
-			actionDesc.backgroundColor = CColor(configStringToInt(kv[1]).value_or(0));
+			actionDesc.backgroundColor = CHyprColor(configStringToInt(kv[1]).value_or(0));
 		} else if (kv[0] == "textfont") {
 			actionDesc.textFont = kv[1];
 		} else if (kv[0] == "textpadding") {

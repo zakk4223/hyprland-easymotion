@@ -13,8 +13,8 @@ struct SGlobalState {
 
 struct SMotionActionDesc {
   int textSize = 15;
-	CColor textColor = CColor(0,0,0,1);
-	CColor backgroundColor = CColor(1,1,1,1);
+	CHyprColor textColor = CHyprColor(0,0,0,1);
+	CHyprColor backgroundColor = CHyprColor(1,1,1,1);
 	std::string textFont = "Sans";
 	std::string commandString = "";
 	CCssGapData boxPadding = CCssGapData();	
