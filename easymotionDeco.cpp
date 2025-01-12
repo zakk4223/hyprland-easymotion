@@ -116,7 +116,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
         return;
 
     const auto PWORKSPACE      = m_pWindow->m_pWorkspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !m_pWindow->m_bPinned ? PWORKSPACE->m_vRenderOffset.value() : Vector2D();
+    const auto WORKSPACEOFFSET = PWORKSPACE && !m_pWindow->m_bPinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
 
     const auto ROUNDING = m_iRounding; 
 
@@ -180,15 +180,15 @@ CBox CHyprEasyLabel::assignedBoxGlobal() {
 
 		double boxHeight, boxWidth;
 		double boxSize;
-		boxHeight = m_pWindow->m_vRealSize.value().y * 0.10;
-		boxWidth = m_pWindow->m_vRealSize.value().x * 0.10;
+		boxHeight = m_pWindow->m_vRealSize->value().y * 0.10;
+		boxWidth = m_pWindow->m_vRealSize->value().x * 0.10;
 		boxSize = std::min(boxHeight, boxWidth);
-	  double boxX = m_pWindow->m_vRealPosition.value().x + (m_pWindow->m_vRealSize.value().x-boxSize)/2;
-	  double boxY = m_pWindow->m_vRealPosition.value().y + (m_pWindow->m_vRealSize.value().y-boxSize)/2;
+	  double boxX = m_pWindow->m_vRealPosition->value().x + (m_pWindow->m_vRealSize->value().x-boxSize)/2;
+	  double boxY = m_pWindow->m_vRealPosition->value().y + (m_pWindow->m_vRealSize->value().y-boxSize)/2;
     CBox box = {boxX, boxY, boxSize, boxSize};
 
     const auto PWORKSPACE      = m_pWindow->m_pWorkspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !m_pWindow->m_bPinned ? PWORKSPACE->m_vRenderOffset.value() : Vector2D();
+    const auto WORKSPACEOFFSET = PWORKSPACE && !m_pWindow->m_bPinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
 
     return box.translate(WORKSPACEOFFSET);
 }
