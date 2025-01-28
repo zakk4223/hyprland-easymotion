@@ -56,7 +56,7 @@ void addEasyMotionKeybinds()
 
 void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::string &label)
 {
-	std::unique_ptr<CHyprEasyLabel> motionlabel = std::make_unique<CHyprEasyLabel>(window, actionDesc);
+	UP<CHyprEasyLabel> motionlabel = makeUnique<CHyprEasyLabel>(window, actionDesc);
 	motionlabel.get()->m_szLabel = label;
 	g_pGlobalState->motionLabels.push_back(motionlabel.get());
 	HyprlandAPI::addWindowDecoration(PHANDLE, window, std::move(motionlabel));

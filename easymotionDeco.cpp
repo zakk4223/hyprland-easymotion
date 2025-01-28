@@ -139,21 +139,21 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 
     if (motionBox.w < 1 || motionBox.h < 1)
         return;
-    g_pHyprOpenGL->scissor(&motionBox);
-    g_pHyprOpenGL->renderRect(&motionBox, m_cBackgroundColor, scaledRounding);
+    g_pHyprOpenGL->scissor(motionBox);
+    g_pHyprOpenGL->renderRect(motionBox, m_cBackgroundColor, scaledRounding);
 		
 		if (m_iBorderSize) {
     	CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
     	borderBox.translate(pMonitor->vecPosition*-1).scale(pMonitor->scale).round();
 			if (borderBox.w >= 1 && borderBox.h >= 1) {
-				g_pHyprOpenGL->renderBorder(&borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
+				g_pHyprOpenGL->renderBorder(borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
 			}
 		}
 
 
-		g_pHyprOpenGL->renderTexture(m_tTextTex, &motionBox, a);
+		g_pHyprOpenGL->renderTexture(m_tTextTex, motionBox, a);
 
-    g_pHyprOpenGL->scissor((CBox*)nullptr);
+    g_pHyprOpenGL->scissor(nullptr);
 }
 
 eDecorationType CHyprEasyLabel::getDecorationType() {
