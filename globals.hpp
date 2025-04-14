@@ -8,7 +8,7 @@ inline HANDLE PHANDLE = nullptr;
 class CHyprEasyLabel;
 
 struct SGlobalState {
-    std::vector<CHyprEasyLabel*>   motionLabels;
+    std::vector<WP<CHyprEasyLabel>>   motionLabels;
 };
 
 struct SMotionActionDesc {
@@ -21,8 +21,11 @@ struct SMotionActionDesc {
 	int borderSize = 0;
 	CGradientValueData borderColor = CGradientValueData();
 	int rounding = 0;
+  int blur = 0;
+  int xray = 0;
+  float blurA = 1.0f;
 	std::string motionKeys = "abcdefghijklmnopqrstuvwxyz1234567890";
 };
 
-inline std::unique_ptr<SGlobalState> g_pGlobalState;
+inline UP<SGlobalState> g_pGlobalState;
 

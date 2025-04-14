@@ -26,6 +26,15 @@ plugin {
     #background color of the label box. alpha is respected
     bgcolor=rgba(000000ff)
 
+    #enable blur. The bgcolor alpha must be at least semi-transparent.
+    blur=0
+
+    #Set blur alpha value. Blur must be enabled (float value)
+    blurA=1.0
+
+    #Set xray. Blur must be enabled
+    xray=0
+
     #font to use for the label. This is passed directly to the pango font description
     textfont=Sans
 
@@ -85,7 +94,7 @@ wayland.windowManager.hyprland = {
 };
 ```
 # TODO
-- [ ] Blur?
+- [x] Blur?
 - [ ] Allow multi-letter labels?
 - [ ] Fixed/static label box sizing
 - [ ] Location of label in window (edges etc)

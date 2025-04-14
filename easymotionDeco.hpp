@@ -45,11 +45,15 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int																 m_iPaddingLeft;
 		int																 m_iPaddingRight;
 		int 															 m_iRounding;
+    int                                m_iBlur;
+    int                                m_iXray;
+    float                              m_iBlurA;
 
 		CHyprColor		  											 m_cTextColor;
 		CHyprColor														 m_cBackgroundColor;
 		int																 m_iBorderSize;
 		CGradientValueData								 m_cBorderGradient;
+    WP<CHyprEasyLabel>                 m_self;
 
 
 	
@@ -60,7 +64,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int     layoutHeight;
     SBoxExtents m_seExtents;
 
-    PHLWINDOW                 m_pWindow;
+    PHLWINDOWREF                 m_pWindow;
 
     SP<CTexture>                 m_tTextTex;
 

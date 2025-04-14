@@ -20,11 +20,10 @@ APICALL EXPORT std::string PLUGIN_API_VERSION() {
 SDispatchResult easymotionExitDispatch(std::string args)
 {
 		for (auto &ml : g_pGlobalState->motionLabels | std::ranges::views::reverse) {
-			ml->getOwner()->removeWindowDeco(ml);
+			ml->getOwner()->removeWindowDeco(ml.get());
 		}
 		HyprlandAPI::invokeHyprctlCommand("dispatch", "submap reset");
 		g_pEventManager->postEvent(SHyprIPCEvent{"easymotionexit", ""});
-
     return {};
 
 }
@@ -47,7 +46,6 @@ void addEasyMotionKeybinds()
 {
 
 		g_pKeybindManager->addKeybind(SKeybind{"escape", {}, 0, 0, 0, {}, "easymotionexit", "", 0, "__easymotionsubmap__", "", 0, 0, 0, 0, 0, 0, 0, 0});
-
 	  //catchall
 		g_pKeybindManager->addKeybind(SKeybind{"", {}, 0, 1, 0, {}, "", "", 0, "__easymotionsubmap__", "", 0, 0, 0, 0, 0, 0, 0, 0});
 
@@ -57,8 +55,9 @@ void addEasyMotionKeybinds()
 void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::string &label)
 {
 	UP<CHyprEasyLabel> motionlabel = makeUnique<CHyprEasyLabel>(window, actionDesc);
-	motionlabel.get()->m_szLabel = label;
-	g_pGlobalState->motionLabels.push_back(motionlabel.get());
+	motionlabel->m_szLabel = label;
+	g_pGlobalState->motionLabels.emplace_back(motionlabel);
+  motionlabel->m_self = motionlabel;
 	HyprlandAPI::addWindowDecoration(PHANDLE, window, std::move(motionlabel));
 }
 
@@ -101,6 +100,7 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
         DATA->m_vColors.push_back(0); // transparent
     }
 
+    DATA->updateColorsOk();
     return true;
 }
 
@@ -115,7 +115,11 @@ SDispatchResult easymotionDispatch(std::string args)
 		static auto *const BORDERSIZE = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:bordersize")->getDataStaticPtr();
 		static auto *const BORDERCOLOR = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:bordercolor")->getDataStaticPtr();
 		static auto *const ROUNDING = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:rounding")->getDataStaticPtr();
+		static auto *const BLUR = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blur")->getDataStaticPtr();
+		static auto *const XRAY = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:xray")->getDataStaticPtr();
+		static auto *const BLURA = (Hyprlang::FLOAT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blurA")->getDataStaticPtr();
 		static auto *const MOTIONKEYS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionkeys")->getDataStaticPtr();
+
 
 	CVarList emargs(args, 0, ',');
 	SMotionActionDesc actionDesc;
@@ -133,6 +137,9 @@ SDispatchResult easymotionDispatch(std::string args)
 		actionDesc.borderColor.m_fAngle = 0;
 	}
 	actionDesc.motionKeys = *MOTIONKEYS;
+  actionDesc.blur = **BLUR;
+  actionDesc.xray = **XRAY;
+  actionDesc.blurA = **BLURA;
 
 
 	for(size_t i = 0; i < emargs.size(); i++)
@@ -236,10 +243,13 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bordersize", Hyprlang::INT{0});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bordercolor", Hyprlang::STRING{"rgba(ffffffff)"});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:rounding", Hyprlang::INT{0});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:blur", Hyprlang::INT{0});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:blurA", Hyprlang::FLOAT{1.0f});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:xray", Hyprlang::INT{0});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:motionkeys", Hyprlang::STRING{"abcdefghijklmnopqrstuvwxyz1234567890"});
 
 
-		g_pGlobalState = std::make_unique<SGlobalState>();
+		g_pGlobalState = makeUnique<SGlobalState>();
 		HyprlandAPI::addDispatcherV2(PHANDLE, "easymotion", easymotionDispatch);
 		HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionaction", easymotionActionDispatch);
 		HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionexit", easymotionExitDispatch);
