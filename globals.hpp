@@ -26,6 +26,7 @@ struct SMotionActionDesc {
   float blurA = 1.0f;
 	std::string motionKeys = "abcdefghijklmnopqrstuvwxyz1234567890";
   std::string fullscreen_action = "none";
+  int only_special = 1;
 };
 
 inline UP<SGlobalState> g_pGlobalState;

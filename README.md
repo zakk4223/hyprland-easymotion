@@ -61,6 +61,9 @@ plugin {
 
     #which keys to use for labeling windows
     motionkeys=abcdefghijklmnopqrstuvwxyz1234567890
+
+    #if a monitor has a focused special workspace, only put easymotion labels on the windows in the special workspace
+    only_special = true
   }
 }
 ```

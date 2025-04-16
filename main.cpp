@@ -1,5 +1,6 @@
 #include <hyprland/src/desktop/Workspace.hpp>
 #include <hyprland/src/plugins/PluginAPI.hpp>
+#include <string>
 #include <unistd.h>
 
 #include <any>
@@ -135,6 +136,7 @@ SDispatchResult easymotionDispatch(std::string args)
 		static auto *const BLURA = (Hyprlang::FLOAT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blurA")->getDataStaticPtr();
 		static auto *const MOTIONKEYS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionkeys")->getDataStaticPtr();
 		static auto *const FSACTION = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action")->getDataStaticPtr();
+		static auto *const ONLYSPECIAL = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:only_special")->getDataStaticPtr();
 
 
 	CVarList emargs(args, 0, ',');
@@ -157,6 +159,7 @@ SDispatchResult easymotionDispatch(std::string args)
   actionDesc.xray = **XRAY;
   actionDesc.blurA = **BLURA;
   actionDesc.fullscreen_action = std::string(*FSACTION);
+  actionDesc.only_special = **ONLYSPECIAL;
 
 
 	for(size_t i = 0; i < emargs.size(); i++)
@@ -190,8 +193,20 @@ SDispatchResult easymotionDispatch(std::string args)
 			}
 		} else if (kv[0] == "motionkeys") {
 				actionDesc.motionKeys = kv[1];
+    } else if (kv[0] == "blur") {
+      actionDesc.blur = configStringToInt(kv[1]).value_or(1);
+    } else if (kv[0] == "xray") {
+      actionDesc.xray = configStringToInt(kv[1]).value_or(1);
+    } else if (kv[0] == "blurA") {
+      try {
+        actionDesc.blurA = std::stof(kv[1]);
+      } catch (const std::invalid_argument& ia) {
+        actionDesc.blurA = 1.0f;
+      }
 		} else if (kv[0] == "fullscreen_action") {
       actionDesc.fullscreen_action = kv[1];
+    } else if (kv[0] == "only_special") {
+      actionDesc.only_special = configStringToInt(kv[1]).value_or(1);
     }
 	}
 
@@ -203,6 +218,8 @@ SDispatchResult easymotionDispatch(std::string args)
 			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
+          if (m->activeSpecialWorkspace && w->m_pWorkspace != m->activeSpecialWorkspace && actionDesc.only_special)
+            continue;
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);
 			}
@@ -263,6 +280,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:xray", Hyprlang::INT{0});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:motionkeys", Hyprlang::STRING{"abcdefghijklmnopqrstuvwxyz1234567890"});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action", Hyprlang::STRING{"none"});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:only_special", Hyprlang::INT{1});
 
 
 		g_pGlobalState = makeUnique<SGlobalState>();
