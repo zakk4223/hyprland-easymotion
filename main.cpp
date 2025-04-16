@@ -58,19 +58,18 @@ void addEasyMotionKeybinds()
 
 void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::string &label)
 {
-	static auto *const FSACTION = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action")->getDataStaticPtr();
 	UP<CHyprEasyLabel> motionlabel = makeUnique<CHyprEasyLabel>(window, actionDesc);
 	motionlabel->m_szLabel = label;
 	g_pGlobalState->motionLabels.emplace_back(motionlabel);
   motionlabel->m_self = motionlabel;
   motionlabel->draw(window->m_pMonitor.lock(), 1.0);
   motionlabel->m_origFSMode = window->m_sFullscreenState.internal;
-  if ((motionlabel->m_origFSMode != eFullscreenMode::FSMODE_NONE) && strcasecmp(*FSACTION, "none"))
+  if ((motionlabel->m_origFSMode != eFullscreenMode::FSMODE_NONE) && (actionDesc->fullscreen_action != "none"))
   {
-    if (!strcasecmp(*FSACTION, "maximize"))
+    if (actionDesc->fullscreen_action == "maximize")
     {
       g_pCompositor->setWindowFullscreenInternal(window, FSMODE_MAXIMIZED);
-    } else if (!strcasecmp(*FSACTION, "toggle")) {
+    } else if (actionDesc->fullscreen_action == "toggle") {
       g_pCompositor->setWindowFullscreenInternal(window, FSMODE_NONE);
     }
   }
@@ -135,6 +134,7 @@ SDispatchResult easymotionDispatch(std::string args)
 		static auto *const XRAY = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:xray")->getDataStaticPtr();
 		static auto *const BLURA = (Hyprlang::FLOAT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blurA")->getDataStaticPtr();
 		static auto *const MOTIONKEYS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionkeys")->getDataStaticPtr();
+		static auto *const FSACTION = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action")->getDataStaticPtr();
 
 
 	CVarList emargs(args, 0, ',');
@@ -156,6 +156,7 @@ SDispatchResult easymotionDispatch(std::string args)
   actionDesc.blur = **BLUR;
   actionDesc.xray = **XRAY;
   actionDesc.blurA = **BLURA;
+  actionDesc.fullscreen_action = std::string(*FSACTION);
 
 
 	for(size_t i = 0; i < emargs.size(); i++)
@@ -189,9 +190,12 @@ SDispatchResult easymotionDispatch(std::string args)
 			}
 		} else if (kv[0] == "motionkeys") {
 				actionDesc.motionKeys = kv[1];
-		}
+		} else if (kv[0] == "fullscreen_action") {
+      actionDesc.fullscreen_action = kv[1];
+    }
 	}
 
+  std::transform(actionDesc.fullscreen_action.begin(), actionDesc.fullscreen_action.end(), actionDesc.fullscreen_action.begin(), tolower);
 	int key_idx = 0;
 
 	for (auto &w : g_pCompositor->m_vWindows) {
@@ -199,11 +203,6 @@ SDispatchResult easymotionDispatch(std::string args)
 			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
-                    /*if (w->m_pWorkspace->m_bHasFullscreenWindow && 
-
-                        w->m_pWorkspace->getFullscreenWindow() != w) {
-                        continue;
-                    }*/
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);
 			}
