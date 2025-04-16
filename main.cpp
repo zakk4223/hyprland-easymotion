@@ -1,3 +1,4 @@
+#include <hyprland/src/desktop/Workspace.hpp>
 #include <hyprland/src/plugins/PluginAPI.hpp>
 #include <unistd.h>
 
@@ -7,6 +8,7 @@
 #include <hyprland/src/desktop/Window.hpp>
 #include <hyprland/src/config/ConfigManager.hpp>
 #include <hyprland/src/managers/EventManager.hpp>
+#include <strings.h>
 
 #include "easymotionDeco.hpp"
 #include "globals.hpp"
@@ -20,7 +22,9 @@ APICALL EXPORT std::string PLUGIN_API_VERSION() {
 SDispatchResult easymotionExitDispatch(std::string args)
 {
 		for (auto &ml : g_pGlobalState->motionLabels | std::ranges::views::reverse) {
-			ml->getOwner()->removeWindowDeco(ml.get());
+        if (ml->m_origFSMode != ml->getOwner()->m_sFullscreenState.internal)
+          g_pCompositor->setWindowFullscreenInternal(ml->getOwner(), ml->m_origFSMode);
+			  ml->getOwner()->removeWindowDeco(ml.get());
 		}
 		HyprlandAPI::invokeHyprctlCommand("dispatch", "submap reset");
 		g_pEventManager->postEvent(SHyprIPCEvent{"easymotionexit", ""});
@@ -54,10 +58,22 @@ void addEasyMotionKeybinds()
 
 void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::string &label)
 {
+	static auto *const FSACTION = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action")->getDataStaticPtr();
 	UP<CHyprEasyLabel> motionlabel = makeUnique<CHyprEasyLabel>(window, actionDesc);
 	motionlabel->m_szLabel = label;
 	g_pGlobalState->motionLabels.emplace_back(motionlabel);
   motionlabel->m_self = motionlabel;
+  motionlabel->draw(window->m_pMonitor.lock(), 1.0);
+  motionlabel->m_origFSMode = window->m_sFullscreenState.internal;
+  if ((motionlabel->m_origFSMode != eFullscreenMode::FSMODE_NONE) && strcasecmp(*FSACTION, "none"))
+  {
+    if (!strcasecmp(*FSACTION, "maximize"))
+    {
+      g_pCompositor->setWindowFullscreenInternal(window, FSMODE_MAXIMIZED);
+    } else if (!strcasecmp(*FSACTION, "toggle")) {
+      g_pCompositor->setWindowFullscreenInternal(window, FSMODE_NONE);
+    }
+  }
 	HyprlandAPI::addWindowDecoration(PHANDLE, window, std::move(motionlabel));
 }
 
@@ -183,11 +199,11 @@ SDispatchResult easymotionDispatch(std::string args)
 			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
-                    if (w->m_pWorkspace->m_bHasFullscreenWindow && 
+                    /*if (w->m_pWorkspace->m_bHasFullscreenWindow && 
 
                         w->m_pWorkspace->getFullscreenWindow() != w) {
                         continue;
-                    }
+                    }*/
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);
 			}
@@ -247,6 +263,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:blurA", Hyprlang::FLOAT{1.0f});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:xray", Hyprlang::INT{0});
 		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:motionkeys", Hyprlang::STRING{"abcdefghijklmnopqrstuvwxyz1234567890"});
+		HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action", Hyprlang::STRING{"none"});
 
 
 		g_pGlobalState = makeUnique<SGlobalState>();

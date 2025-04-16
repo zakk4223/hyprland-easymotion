@@ -52,6 +52,12 @@ plugin {
     #rounded corners? Same as hyprland's 'decoration:rounding' config
     rounding=0
 
+    #what to do if a window is fullscreen
+    #none: nothing. (easymotion label won't be displayed on that window)
+    #toggle: take the window out of fullscreen entirely. 
+    #maximize: convert the window to maximized.
+    #windows are restored to fullscreen after easymotion is exited/selected
+    fullscreen_action=none
     #which keys to use for labeling windows
     motionkeys=abcdefghijklmnopqrstuvwxyz1234567890
   }

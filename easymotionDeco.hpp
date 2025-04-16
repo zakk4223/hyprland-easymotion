@@ -6,6 +6,7 @@
 #include <hyprland/src/render/decorations/IHyprWindowDecoration.hpp>
 #include <hyprland/src/render/OpenGL.hpp>
 #include <hyprland/src/devices/IKeyboard.hpp>
+#include <hyprland/src/desktop/Workspace.hpp>
 #include "globals.hpp"
 
 class CHyprEasyLabel : public IHyprWindowDecoration {
@@ -54,6 +55,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int																 m_iBorderSize;
 		CGradientValueData								 m_cBorderGradient;
     WP<CHyprEasyLabel>                 m_self;
+    eFullscreenMode                    m_origFSMode;
 
 
 	
