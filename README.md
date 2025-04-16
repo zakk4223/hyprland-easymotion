@@ -58,6 +58,7 @@ plugin {
     #maximize: convert the window to maximized.
     #windows are restored to fullscreen after easymotion is exited/selected
     fullscreen_action=none
+
     #which keys to use for labeling windows
     motionkeys=abcdefghijklmnopqrstuvwxyz1234567890
   }
