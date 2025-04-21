@@ -81,7 +81,7 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
     std::string V = VALUE;
 
     CVarList   varlist(V, 0, ' ');
-    DATA->m_vColors.clear();
+    DATA->m_colors.clear();
 
     std::string parseError = "";
 
@@ -89,7 +89,7 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
         if (var.find("deg") != std::string::npos) {
             // last arg
             try {
-                DATA->m_fAngle = std::stoi(var.substr(0, var.find("deg"))) * (PI / 180.0); // radians
+                DATA->m_angle = std::stoi(var.substr(0, var.find("deg"))) * (PI / 180.0); // radians
             } catch (...) {
                 Debug::log(WARN, "Error parsing gradient {}", V);
 								return false;
@@ -98,22 +98,22 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
             break;
         }
 
-        if (DATA->m_vColors.size() >= 10) {
+        if (DATA->m_colors.size() >= 10) {
             Debug::log(WARN, "Error parsing gradient {}: max colors is 10.", V);
 						return false;
             break;
         }
 
         try {
-            DATA->m_vColors.push_back(CHyprColor(configStringToInt(var).value_or(0)));
+            DATA->m_colors.push_back(CHyprColor(configStringToInt(var).value_or(0)));
         } catch (std::exception& e) {
             Debug::log(WARN, "Error parsing gradient {}", V);
         }
     }
 
-    if (DATA->m_vColors.size() == 0) {
+    if (DATA->m_colors.size() == 0) {
         Debug::log(WARN, "Error parsing gradient {}", V);
-        DATA->m_vColors.push_back(0); // transparent
+        DATA->m_colors.push_back(0); // transparent
     }
 
     DATA->updateColorsOk();
@@ -151,8 +151,8 @@ SDispatchResult easymotionDispatch(std::string args)
 	actionDesc.rounding = **ROUNDING;
 	actionDesc.borderSize = **BORDERSIZE;
 	if(!parseBorderGradient(*BORDERCOLOR, &actionDesc.borderColor)) {
-		actionDesc.borderColor.m_vColors.clear();
-		actionDesc.borderColor.m_fAngle = 0;
+		actionDesc.borderColor.m_colors.clear();
+		actionDesc.borderColor.m_angle = 0;
 	}
 	actionDesc.motionKeys = *MOTIONKEYS;
   actionDesc.blur = **BLUR;
@@ -185,11 +185,11 @@ SDispatchResult easymotionDispatch(std::string args)
 			actionDesc.borderSize = configStringToInt(kv[1]).value_or(0);
 		} else if (kv[0] == "bordercolor") {
 			CVarList varlist(kv[1], 0, 's');
-			actionDesc.borderColor.m_vColors.clear();
-			actionDesc.borderColor.m_fAngle = 0;
+			actionDesc.borderColor.m_colors.clear();
+			actionDesc.borderColor.m_angle = 0;
 			if(!parseBorderGradient(kv[1], &actionDesc.borderColor)) {
-				actionDesc.borderColor.m_vColors.clear();
-				actionDesc.borderColor.m_fAngle = 0;
+				actionDesc.borderColor.m_colors.clear();
+				actionDesc.borderColor.m_angle = 0;
 			}
 		} else if (kv[0] == "motionkeys") {
 				actionDesc.motionKeys = kv[1];

@@ -23,10 +23,10 @@ CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc)
 	  m_cTextColor = actionDesc->textColor;
 		m_cBackgroundColor = actionDesc->backgroundColor;
 		m_szTextFont = actionDesc->textFont;
-		m_iPaddingTop = actionDesc->boxPadding.top;
-		m_iPaddingBottom = actionDesc->boxPadding.bottom;
-		m_iPaddingRight = actionDesc->boxPadding.right;
-		m_iPaddingLeft = actionDesc->boxPadding.left;
+		m_iPaddingTop = actionDesc->boxPadding.m_top;
+		m_iPaddingBottom = actionDesc->boxPadding.m_bottom;
+		m_iPaddingRight = actionDesc->boxPadding.m_right;
+		m_iPaddingLeft = actionDesc->boxPadding.m_left;
 		m_iRounding = actionDesc->rounding;
 		m_iBorderSize = actionDesc->borderSize;
 		m_cBorderGradient = actionDesc->borderColor;
@@ -209,7 +209,7 @@ void CHyprEasyLabel::damageEntire() {
 }
 
 eDecorationLayer CHyprEasyLabel::getDecorationLayer() {
-    return DECORATION_LAYER_OVER;
+    return DECORATION_LAYER_OVERLAY;
 }
 
 uint64_t CHyprEasyLabel::getDecorationFlags() {
