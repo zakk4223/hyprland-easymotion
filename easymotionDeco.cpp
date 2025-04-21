@@ -209,7 +209,7 @@ void CHyprEasyLabel::damageEntire() {
 }
 
 eDecorationLayer CHyprEasyLabel::getDecorationLayer() {
-    return DECORATION_LAYER_OVERLAY;
+    return DECORATION_LAYER_OVER;
 }
 
 uint64_t CHyprEasyLabel::getDecorationFlags() {
