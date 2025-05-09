@@ -215,10 +215,10 @@ SDispatchResult easymotionDispatch(std::string args)
 
 	for (auto &w : g_pCompositor->m_windows) {
 		for (auto &m : g_pCompositor->m_monitors) {
-			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
-					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
+			if (w->m_workspace == m->m_activeWorkspace || m->m_activeSpecialWorkspace == w->m_workspace) {
+					if (w->isHidden() || !w->m_isMapped || w->m_fadingOut)
 						continue;
-          if (m->activeSpecialWorkspace && w->m_pWorkspace != m->activeSpecialWorkspace && actionDesc.only_special)
+          if (m->m_activeSpecialWorkspace && w->m_workspace != m->m_activeSpecialWorkspace && actionDesc.only_special)
             continue;
 					std::string lstr = actionDesc.motionKeys.substr(key_idx++, 1);
 					addLabelToWindow(w, &actionDesc, lstr);

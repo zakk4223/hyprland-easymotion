@@ -16,7 +16,7 @@ CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc)
     m_pWindow = pWindow;
 
     const auto PMONITOR       = pWindow->m_monitor.lock();
-    PMONITOR->scheduledRecalc = true;
+    PMONITOR->m_scheduledRecalc = true;
 		m_szWindowAddress = std::format("0x{:x}", (uintptr_t)pWindow.get());
 		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(m_szWindowAddress));
 		m_iTextSize = actionDesc->textSize;
@@ -131,7 +131,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
         return;
 
     const auto PWORKSPACE      = PWINDOW->m_workspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
+    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_renderOffset->value() : Vector2D();
 
     const auto DECOBOX = assignedBoxGlobal();
 
@@ -147,7 +147,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 		}
 
     CBox       motionBox = {DECOBOX.x, DECOBOX.y, m_tTextTex->m_size.x, m_tTextTex->m_size.y};
-    motionBox.translate(pMonitor->m_vecPosition*-1).scale(pMonitor->m_scale).round();
+    motionBox.translate(pMonitor->m_position*-1).scale(pMonitor->m_scale).round();
 
     if (motionBox.w < 1 || motionBox.h < 1)
     {
@@ -171,7 +171,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 		
 		if (m_iBorderSize) {
     	CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
-    	borderBox.translate(pMonitor->m_vecPosition*-1).scale(pMonitor->m_scale).round();
+    	borderBox.translate(pMonitor->m_position*-1).scale(pMonitor->m_scale).round();
 			if (borderBox.w >= 1 && borderBox.h >= 1) {
         CBorderPassElement::SBorderData borderData;
         borderData.box = borderBox;
@@ -229,7 +229,7 @@ CBox CHyprEasyLabel::assignedBoxGlobal() {
     CBox box = {boxX, boxY, boxSize, boxSize};
 
     const auto PWORKSPACE      = PWINDOW->m_workspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
+    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_renderOffset->value() : Vector2D();
 
     return box.translate(WORKSPACEOFFSET);
 }
