@@ -23,7 +23,7 @@ APICALL EXPORT std::string PLUGIN_API_VERSION() {
 SDispatchResult easymotionExitDispatch(std::string args)
 {
 		for (auto &ml : g_pGlobalState->motionLabels | std::ranges::views::reverse) {
-        if (ml->m_origFSMode != ml->getOwner()->m_sFullscreenState.internal)
+        if (ml->m_origFSMode != ml->getOwner()->m_fullscreenState.internal)
           g_pCompositor->setWindowFullscreenInternal(ml->getOwner(), ml->m_origFSMode);
 			  ml->getOwner()->removeWindowDeco(ml.get());
 		}
@@ -38,7 +38,7 @@ SDispatchResult easymotionActionDispatch(std::string args)
 	for (auto &ml : g_pGlobalState->motionLabels) {
 		if (ml->m_szLabel == args) {
 			g_pEventManager->postEvent(SHyprIPCEvent{"easymotionselect", std::format("{},{}", ml->m_szWindowAddress, ml->m_szLabel)});
-			g_pKeybindManager->m_mDispatchers["exec"](ml->m_szActionCmd);
+			g_pKeybindManager->m_dispatchers["exec"](ml->m_szActionCmd);
 			easymotionExitDispatch("");
 			break;
 		}
@@ -63,8 +63,8 @@ void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::stri
 	motionlabel->m_szLabel = label;
 	g_pGlobalState->motionLabels.emplace_back(motionlabel);
   motionlabel->m_self = motionlabel;
-  motionlabel->draw(window->m_pMonitor.lock(), 1.0);
-  motionlabel->m_origFSMode = window->m_sFullscreenState.internal;
+  motionlabel->draw(window->m_monitor.lock(), 1.0);
+  motionlabel->m_origFSMode = window->m_fullscreenState.internal;
   if ((motionlabel->m_origFSMode != eFullscreenMode::FSMODE_NONE) && (actionDesc->fullscreen_action != "none"))
   {
     if (actionDesc->fullscreen_action == "maximize")
@@ -213,8 +213,8 @@ SDispatchResult easymotionDispatch(std::string args)
   std::transform(actionDesc.fullscreen_action.begin(), actionDesc.fullscreen_action.end(), actionDesc.fullscreen_action.begin(), tolower);
 	int key_idx = 0;
 
-	for (auto &w : g_pCompositor->m_vWindows) {
-		for (auto &m : g_pCompositor->m_vMonitors) {
+	for (auto &w : g_pCompositor->m_windows) {
+		for (auto &m : g_pCompositor->m_monitors) {
 			if (w->m_pWorkspace == m->activeWorkspace || m->activeSpecialWorkspace == w->m_pWorkspace) {
 					if (w->isHidden() || !w->m_bIsMapped || w->m_bFadingOut)
 						continue;
@@ -245,7 +245,7 @@ bool oneasymotionKeypress(void *self, std::any data) {
 
 	const auto KEYCODE = ev.keycode + 8;
 
-	const xkb_keysym_t KEYSYM = xkb_state_key_get_one_sym(keyboard->xkbState, KEYCODE);
+	const xkb_keysym_t KEYSYM = xkb_state_key_get_one_sym(keyboard->m_xkbState, KEYCODE);
 
 	if (ev.state != WL_KEYBOARD_KEY_STATE_PRESSED) return false;
 

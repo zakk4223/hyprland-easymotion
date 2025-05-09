@@ -15,7 +15,7 @@
 CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc) : IHyprWindowDecoration(pWindow) {
     m_pWindow = pWindow;
 
-    const auto PMONITOR       = pWindow->m_pMonitor.lock();
+    const auto PMONITOR       = pWindow->m_monitor.lock();
     PMONITOR->scheduledRecalc = true;
 		m_szWindowAddress = std::format("0x{:x}", (uintptr_t)pWindow.get());
 		m_szActionCmd = std::vformat(actionDesc->commandString, std::make_format_args(m_szWindowAddress));
@@ -99,8 +99,8 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	cairo_surface_flush(CAIROSURFACE);
 	const auto DATA = cairo_image_surface_get_data(CAIROSURFACE);
 	m_tTextTex->allocate();
-  m_tTextTex->m_vSize = {bufferSize.x, bufferSize.y};
-  glBindTexture(GL_TEXTURE_2D, m_tTextTex->m_iTexID);
+  m_tTextTex->m_size = {bufferSize.x, bufferSize.y};
+  glBindTexture(GL_TEXTURE_2D, m_tTextTex->m_texID);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -127,15 +127,15 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
  
     const auto PWINDOW = m_pWindow.lock();
 
-    if (!PWINDOW->m_sWindowData.decorate.valueOrDefault())
+    if (!PWINDOW->m_windowData.decorate.valueOrDefault())
         return;
 
-    const auto PWORKSPACE      = PWINDOW->m_pWorkspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_bPinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
+    const auto PWORKSPACE      = PWINDOW->m_workspace;
+    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
 
     const auto DECOBOX = assignedBoxGlobal();
 
-    const auto BARBUF = DECOBOX.size() * pMonitor->scale;
+    const auto BARBUF = DECOBOX.size() * pMonitor->m_scale;
 
     //CBox       motionBox = {DECOBOX.x - pMonitor->vecPosition.x, DECOBOX.y - pMonitor->vecPosition.y, DECOBOX.w,
 	
@@ -143,11 +143,11 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 	
 
 		if (!m_tTextTex.get()) {
-			renderMotionString(TEXTBUF, pMonitor->scale);
+			renderMotionString(TEXTBUF, pMonitor->m_scale);
 		}
 
-    CBox       motionBox = {DECOBOX.x, DECOBOX.y, m_tTextTex->m_vSize.x, m_tTextTex->m_vSize.y};
-    motionBox.translate(pMonitor->vecPosition*-1).scale(pMonitor->scale).round();
+    CBox       motionBox = {DECOBOX.x, DECOBOX.y, m_tTextTex->m_size.x, m_tTextTex->m_size.y};
+    motionBox.translate(pMonitor->m_vecPosition*-1).scale(pMonitor->m_scale).round();
 
     if (motionBox.w < 1 || motionBox.h < 1)
     {
@@ -166,12 +166,12 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 
     rectData.round = m_iRounding != 0;
     rectData.roundingPower = m_iRounding ;
-    g_pHyprRenderer->m_sRenderPass.add(makeShared<CRectPassElement>(rectData));
+    g_pHyprRenderer->m_renderPass.add(makeShared<CRectPassElement>(rectData));
     
 		
 		if (m_iBorderSize) {
     	CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
-    	borderBox.translate(pMonitor->vecPosition*-1).scale(pMonitor->scale).round();
+    	borderBox.translate(pMonitor->m_vecPosition*-1).scale(pMonitor->m_scale).round();
 			if (borderBox.w >= 1 && borderBox.h >= 1) {
         CBorderPassElement::SBorderData borderData;
         borderData.box = borderBox;
@@ -180,7 +180,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
         borderData.roundingPower = m_iRounding;
         borderData.borderSize = m_iBorderSize;
         borderData.a = a;
-        g_pHyprRenderer->m_sRenderPass.add(makeShared<CBorderPassElement>(borderData));
+        g_pHyprRenderer->m_renderPass.add(makeShared<CBorderPassElement>(borderData));
 				//g_pHyprOpenGL->renderBorder(borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
 			}
 		}
@@ -189,7 +189,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
     motionBox.round();
     texData.tex = m_tTextTex;
     texData.box = motionBox;
-    g_pHyprRenderer->m_sRenderPass.add(makeShared<CTexPassElement>(texData));
+    g_pHyprRenderer->m_renderPass.add(makeShared<CTexPassElement>(texData));
   
   
 }
@@ -204,7 +204,7 @@ void CHyprEasyLabel::updateWindow(PHLWINDOW pWindow) {
 
 void CHyprEasyLabel::damageEntire() {
   auto box = assignedBoxGlobal();
-  box.translate(m_pWindow->m_vFloatingOffset);
+  box.translate(m_pWindow->m_floatingOffset);
   g_pHyprRenderer->damageBox(box);
 }
 
@@ -221,15 +221,15 @@ CBox CHyprEasyLabel::assignedBoxGlobal() {
     const auto PWINDOW = m_pWindow.lock();
 		double boxHeight, boxWidth;
 		double boxSize;
-		boxHeight = PWINDOW->m_vRealSize->value().y * 0.10;
-		boxWidth = PWINDOW->m_vRealSize->value().x * 0.10;
+		boxHeight = PWINDOW->m_realSize->value().y * 0.10;
+		boxWidth = PWINDOW->m_realSize->value().x * 0.10;
 		boxSize = std::min(boxHeight, boxWidth);
-	  double boxX = PWINDOW->m_vRealPosition->value().x + (PWINDOW->m_vRealSize->value().x-boxSize)/2;
-	  double boxY = PWINDOW->m_vRealPosition->value().y + (PWINDOW->m_vRealSize->value().y-boxSize)/2;
+	  double boxX = PWINDOW->m_realPosition->value().x + (PWINDOW->m_realSize->value().x-boxSize)/2;
+	  double boxY = PWINDOW->m_realPosition->value().y + (PWINDOW->m_realSize->value().y-boxSize)/2;
     CBox box = {boxX, boxY, boxSize, boxSize};
 
-    const auto PWORKSPACE      = PWINDOW->m_pWorkspace;
-    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_bPinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
+    const auto PWORKSPACE      = PWINDOW->m_workspace;
+    const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_vRenderOffset->value() : Vector2D();
 
     return box.translate(WORKSPACEOFFSET);
 }
