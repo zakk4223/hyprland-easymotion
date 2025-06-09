@@ -54,7 +54,7 @@ plugin {
 
     #what to do if a window is fullscreen
     #none: nothing. (easymotion label won't be displayed on that window)
-    #toggle: take the window out of fullscreen entirely. 
+    #toggle: take the window out of fullscreen entirely.
     #maximize: convert the window to maximized.
     #windows are restored to fullscreen after easymotion is exited/selected
     fullscreen_action=none
@@ -83,7 +83,7 @@ Please note, you should *also have hyprland as a flake input*.
 Add this repo to your flake inputs:
 ```nix
 inputs = {
-  hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+  hyprland.url = "github:hyprwm/Hyprland";
 
   hyprland-easymotion = {
     url = "github:zakk4223/hyprland-easymotion";
@@ -91,7 +91,7 @@ inputs = {
   };
   # ...
 };
-outputs = { self, hyprland, ... } @ inputs:
+outputs = { self, hyprland, hyprland-easymotion, ... } @ inputs:
   # ...
 ```
 Add the plugin to your Hyprland Home Manager config:
