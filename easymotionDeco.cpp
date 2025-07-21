@@ -126,34 +126,25 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 		return;
 
 	const auto PWINDOW = m_pWindow.lock();
-
 	if (!PWINDOW->m_windowData.decorate.valueOrDefault())
 		return;
-
 	const auto PWORKSPACE      = PWINDOW->m_workspace;
 	const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_renderOffset->value() : Vector2D();
-
 	const auto DECOBOX = assignedBoxGlobal();
-
 	const auto BARBUF = DECOBOX.size() * pMonitor->m_scale;
-
 	//CBox       motionBox = {DECOBOX.x - pMonitor->vecPosition.x, DECOBOX.y - pMonitor->vecPosition.y, DECOBOX.w,
 	
 	auto TEXTBUF = DECOBOX.size();
 
-
 	if (!m_tTextTex.get()) {
 		renderMotionString(TEXTBUF, pMonitor->m_scale);
 	}
-
 	CBox       motionBox = {DECOBOX.x, DECOBOX.y, m_tTextTex->m_size.x, m_tTextTex->m_size.y};
 	motionBox.translate(pMonitor->m_position*-1).scale(pMonitor->m_scale).round();
-
 	if (motionBox.w < 1 || motionBox.h < 1)
 	{
 		return;
 	}
-
 	CRectPassElement::SRectData rectData;
 	rectData.color = m_cBackgroundColor;
 	rectData.box = motionBox;
@@ -166,9 +157,9 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 
 	rectData.round = m_iRounding != 0;
 	rectData.roundingPower = m_iRounding ;
-	g_pHyprRenderer->m_renderPass.add(makeShared<CRectPassElement>(rectData));
 
 
+	g_pHyprRenderer->m_renderPass.add(makeUnique<CRectPassElement>(rectData));
 	if (m_iBorderSize) {
 		CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
 		borderBox.translate(pMonitor->m_position*-1).scale(pMonitor->m_scale).round();
@@ -180,16 +171,18 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 			borderData.roundingPower = m_iRounding;
 			borderData.borderSize = m_iBorderSize;
 			borderData.a = a;
-			g_pHyprRenderer->m_renderPass.add(makeShared<CBorderPassElement>(borderData));
+			g_pHyprRenderer->m_renderPass.add(makeUnique<CBorderPassElement>(borderData));
 			//g_pHyprOpenGL->renderBorder(borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
 		}
 	}
-
+	
 	CTexPassElement::SRenderData texData;
 	motionBox.round();
 	texData.tex = m_tTextTex;
 	texData.box = motionBox;
-	g_pHyprRenderer->m_renderPass.add(makeShared<CTexPassElement>(texData));
+
+
+	g_pHyprRenderer->m_renderPass.add(makeUnique<CTexPassElement>(texData));
 }
 
 eDecorationType CHyprEasyLabel::getDecorationType() {

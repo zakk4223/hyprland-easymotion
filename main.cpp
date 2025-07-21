@@ -23,7 +23,7 @@ APICALL EXPORT std::string PLUGIN_API_VERSION() {
 SDispatchResult easymotionExitDispatch(std::string args)
 {
 	for (auto &ml : g_pGlobalState->motionLabels | std::ranges::views::reverse) {
-		if (ml->m_origFSMode != ml->getOwner()->m_sFullscreenState.internal)
+		if (ml->m_origFSMode != ml->getOwner()->m_fullscreenState.internal)
 			g_pCompositor->setWindowFullscreenInternal(ml->getOwner(), ml->m_origFSMode);
 		ml->getOwner()->removeWindowDeco(ml.get());
 	}
@@ -38,7 +38,7 @@ SDispatchResult easymotionActionDispatch(std::string args)
 	for (auto &ml : g_pGlobalState->motionLabels) {
 		if (ml->m_szKey == args) {
 			g_pEventManager->postEvent(SHyprIPCEvent{"easymotionselect", std::format("{},{}", ml->m_szWindowAddress, ml->m_szKey)});
-			g_pKeybindManager->m_mDispatchers["exec"](ml->m_szActionCmd);
+			g_pKeybindManager->m_dispatchers["exec"](ml->m_szActionCmd);
 			easymotionExitDispatch("");
 			break;
 		}
