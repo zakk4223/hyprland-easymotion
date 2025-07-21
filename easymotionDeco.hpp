@@ -36,7 +36,8 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
 		PHLWINDOW                          getOwner();
 
-		std::string	                       m_szLabel;
+		std::string                        m_szKey;
+		std::string                        m_szLabel;
 		std::string                        m_szActionCmd;
 		std::string                        m_szTextFont;
 		std::string                        m_szWindowAddress;
@@ -62,7 +63,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
 
 	private:
-		int	        layoutWidth;
+		int         layoutWidth;
 		int         layoutHeight;
 		SBoxExtents m_seExtents;
 
