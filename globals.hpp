@@ -8,11 +8,11 @@ inline HANDLE PHANDLE = nullptr;
 class CHyprEasyLabel;
 
 struct SGlobalState {
-    std::vector<WP<CHyprEasyLabel>>   motionLabels;
+	std::vector<WP<CHyprEasyLabel>>   motionLabels;
 };
 
 struct SMotionActionDesc {
-  int textSize = 15;
+	int textSize = 15;
 	CHyprColor textColor = CHyprColor(0,0,0,1);
 	CHyprColor backgroundColor = CHyprColor(1,1,1,1);
 	std::string textFont = "Sans";
@@ -21,12 +21,13 @@ struct SMotionActionDesc {
 	int borderSize = 0;
 	CGradientValueData borderColor = CGradientValueData();
 	int rounding = 0;
-  int blur = 0;
-  int xray = 0;
-  float blurA = 1.0f;
+	int blur = 0;
+	int xray = 0;
+	float blurA = 1.0f;
 	std::string motionKeys = "abcdefghijklmnopqrstuvwxyz1234567890";
-  std::string fullscreen_action = "none";
-  int only_special = 1;
+	std::string motionLabels = "";
+	std::string fullscreen_action = "none";
+	int only_special = 1;
 };
 
 inline UP<SGlobalState> g_pGlobalState;
