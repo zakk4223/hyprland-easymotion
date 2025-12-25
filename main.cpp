@@ -9,6 +9,7 @@
 #include <hyprland/src/config/ConfigManager.hpp>
 #include <hyprland/src/managers/EventManager.hpp>
 #include <strings.h>
+#include <hyprland/src/debug/log/Logger.hpp>
 #include "easymotionDeco.hpp"
 #include "globals.hpp"
 // Do NOT change this function.
@@ -75,23 +76,23 @@ static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
 			try {
 				DATA->m_angle = std::stoi(var.substr(0, var.find("deg"))) * (PI / 180.0); // radians
 			} catch (...) {
-				Debug::log(WARN, "Error parsing gradient {}", V);
+				Log::logger->log(Log::WARN, "Error parsing gradient {}", V);
 				return false;
 			}
 			break;
 		}
 		if (DATA->m_colors.size() >= 10) {
-			Debug::log(WARN, "Error parsing gradient {}: max colors is 10.", V);
+			Log::logger->log(Log::WARN, "Error parsing gradient {}: max colors is 10.", V);
 			return false;
 		}
 		try {
 			DATA->m_colors.push_back(CHyprColor(configStringToInt(var).value_or(0)));
 		} catch (std::exception& e) {
-			Debug::log(WARN, "Error parsing gradient {}", V);
+			Log::logger->log(Log::WARN, "Error parsing gradient {}", V);
 		}
 	}
 	if (DATA->m_colors.size() == 0) {
-		Debug::log(WARN, "Error parsing gradient {}", V);
+		Log::logger->log(Log::WARN, "Error parsing gradient {}", V);
 		DATA->m_colors.push_back(0); // transparent
 	}
 	DATA->updateColorsOk();
