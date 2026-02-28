@@ -9,6 +9,8 @@
 #include <hyprland/src/desktop/view/Window.hpp>
 #include <hyprland/src/config/ConfigManager.hpp>
 #include <hyprland/src/managers/EventManager.hpp>
+#include <hyprland/src/managers/input/InputManager.hpp>
+#include <hyprland/src/event/EventBus.hpp>
 #include <hyprland/src/debug/log/Logger.hpp>
 #include <strings.h>
 
@@ -244,15 +246,11 @@ SDispatchResult easymotionDispatch(std::string args)
 	return {};
 }
 
-bool oneasymotionKeypress(void *self, std::any data) {
+bool oneasymotionKeypress(const IKeyboard::SKeyEvent& ev) {
 	if (g_pGlobalState->motionLabels.empty()) return false;
+	if (g_pInputManager->m_keyboards.empty()) return false;
 
-	auto map = std::any_cast<std::unordered_map<std::string, std::any>>(data);
-	std::any kany = map["keyboard"];
-	IKeyboard::SKeyEvent ev = std::any_cast<IKeyboard::SKeyEvent>(map["event"]);
-	SP<IKeyboard>keyboard = std::any_cast<SP<IKeyboard>>(kany);
-
-
+	SP<IKeyboard> keyboard = g_pInputManager->m_keyboards.front();
 
 	const auto KEYCODE = ev.keycode + 8;
 
@@ -298,10 +296,10 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotion", easymotionDispatch);
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionaction", easymotionActionDispatch);
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionexit", easymotionExitDispatch);
-	static auto KPHOOK = HyprlandAPI::registerCallbackDynamic(PHANDLE, "keyPress", [&](void *self, SCallbackInfo &info, std::any data) {
-		info.cancelled = oneasymotionKeypress(self, data);
+	static auto KPHOOK = Event::bus()->m_events.input.keyboard.key.listen([&](IKeyboard::SKeyEvent ev, Event::SCallbackInfo& info) {
+		info.cancelled = oneasymotionKeypress(ev);
 	});
-	static auto CRHOOK = HyprlandAPI::registerCallbackDynamic(PHANDLE, "configReloaded", [&](void *self, SCallbackInfo&, std::any data) {addEasyMotionKeybinds();});
+	static auto CRHOOK = Event::bus()->m_events.config.reloaded.listen([&]() { addEasyMotionKeybinds(); });
 	HyprlandAPI::reloadConfig();
 
 
