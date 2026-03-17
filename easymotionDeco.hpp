@@ -7,6 +7,7 @@
 #include <hyprland/src/render/OpenGL.hpp>
 #include <hyprland/src/devices/IKeyboard.hpp>
 #include <hyprland/src/desktop/Workspace.hpp>
+#include <hyprland/src/render/gl/GLTexture.hpp>
 #include "globals.hpp"
 
 class CHyprEasyLabel : public IHyprWindowDecoration {
@@ -69,11 +70,11 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
 		PHLWINDOWREF             m_pWindow;
 
-		SP<CTexture>             m_tTextTex;
+		SP<CGLTexture>           m_tTextTex;
 
 		bool                     m_bWindowSizeChanged = false;
 
-		void                     renderText(CTexture& out, const std::string& text, const CHyprColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
+		void                     renderText(CGLTexture& out, const std::string& text, const CHyprColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
 		CBox                     assignedBoxGlobal();
 		void                     renderMotionString(Vector2D& bufferSize, const float scale);
 
