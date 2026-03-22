@@ -8,6 +8,7 @@
 #include <hyprland/src/render/Renderer.hpp>
 #include <hyprland/src/desktop/view/Window.hpp>
 #include <hyprland/src/render/decorations/IHyprWindowDecoration.hpp>
+#include <hyprland/src/render/gl/GLTexture.hpp>
 #include <pango/pangocairo.h>
 
 #include "globals.hpp"
@@ -57,7 +58,7 @@ std::string CHyprEasyLabel::getDisplayName() {
 }
 
 void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale) {
-	m_tTextTex = makeShared<CTexture>();
+	m_tTextTex = makeShared<CGLTexture>();
 	int textSize = m_iTextSize;
 	const auto scaledSize = textSize * scale;
 	const auto textColor = CHyprColor(m_cTextColor);
@@ -98,9 +99,8 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	g_object_unref(layout);
 	cairo_surface_flush(CAIROSURFACE);
 	const auto DATA = cairo_image_surface_get_data(CAIROSURFACE);
-	m_tTextTex->allocate();
-	m_tTextTex->m_size = {bufferSize.x, bufferSize.y};
-	glBindTexture(GL_TEXTURE_2D, m_tTextTex->m_texID);
+	m_tTextTex->allocate(bufferSize);
+	m_tTextTex->bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
