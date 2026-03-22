@@ -17,9 +17,9 @@ struct SMotionActionDesc {
 	CHyprColor backgroundColor = CHyprColor(1,1,1,1);
 	std::string textFont = "Sans";
 	std::string commandString = "";
-	CCssGapData boxPadding = CCssGapData();	
+	Config::CCssGapData boxPadding = Config::CCssGapData();	
 	int borderSize = 0;
-	CGradientValueData borderColor = CGradientValueData();
+	Config::CGradientValueData borderColor = Config::CGradientValueData();
 	int rounding = 0;
 	int blur = 0;
 	int xray = 0;
