@@ -12,10 +12,13 @@
 #include <hyprland/src/managers/input/InputManager.hpp>
 #include <hyprland/src/event/EventBus.hpp>
 #include <hyprland/src/debug/log/Logger.hpp>
+#include <hyprutils/string/VarList.hpp>
 #include <strings.h>
 
 #include "easymotionDeco.hpp"
 #include "globals.hpp"
+
+using namespace Hyprutils::String;
 
 // Do NOT change this function.
 APICALL EXPORT std::string PLUGIN_API_VERSION() {
@@ -79,7 +82,7 @@ void addLabelToWindow(PHLWINDOW window, SMotionActionDesc *actionDesc, std::stri
 	HyprlandAPI::addWindowDecoration(PHANDLE, window, std::move(motionlabel));
 }
 
-static bool parseBorderGradient(std::string VALUE, CGradientValueData *DATA) {
+static bool parseBorderGradient(std::string VALUE, Config::CGradientValueData *DATA) {
 	std::string V = VALUE;
 
 	CVarList   varlist(V, 0, ' ');

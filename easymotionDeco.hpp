@@ -1,6 +1,6 @@
 #pragma once
 
-#include <hyprland/src/config/ConfigDataValues.hpp>
+#include <hyprland/src/config/shared/complex/ComplexDataTypes.hpp>
 #include <string>
 
 #include <hyprland/src/render/decorations/IHyprWindowDecoration.hpp>
@@ -55,7 +55,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		CHyprColor                         m_cTextColor;
 		CHyprColor                         m_cBackgroundColor;
 		int                                m_iBorderSize;
-		CGradientValueData                 m_cBorderGradient;
+		Config::CGradientValueData	   m_cBorderGradient;
 		WP<CHyprEasyLabel>                 m_self;
 		eFullscreenMode                    m_origFSMode;
 
