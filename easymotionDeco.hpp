@@ -10,6 +10,8 @@
 #include <hyprland/src/render/gl/GLTexture.hpp>
 #include "globals.hpp"
 
+using namespace Render::GL;
+
 class CHyprEasyLabel : public IHyprWindowDecoration {
 	public:
 		CHyprEasyLabel(PHLWINDOW, SMotionActionDesc *actionDesc);
