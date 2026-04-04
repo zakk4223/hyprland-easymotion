@@ -19,6 +19,7 @@
 #include "globals.hpp"
 
 using namespace Hyprutils::String;
+using namespace Render::GL;
 
 // Do NOT change this function.
 APICALL EXPORT std::string PLUGIN_API_VERSION() {
