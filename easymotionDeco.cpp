@@ -155,8 +155,8 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 		rectData.xray = m_iXray;
 	}
 
-	rectData.round = m_iRounding != 0;
-	rectData.roundingPower = m_iRounding ;
+	rectData.round = m_iRounding * pMonitor->m_scale;
+	rectData.roundingPower = 2.0;
 
 
 	g_pHyprRenderer->m_renderPass.add(makeUnique<CRectPassElement>(rectData));
@@ -167,8 +167,8 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 			CBorderPassElement::SBorderData borderData;
 			borderData.box = borderBox;
 			borderData.grad1 = m_cBorderGradient;
-			borderData.round = m_iRounding != 0;
-			borderData.roundingPower = m_iRounding;
+			borderData.round = m_iRounding * pMonitor->m_scale;
+			borderData.roundingPower = 2.0;
 			borderData.borderSize = m_iBorderSize;
 			borderData.a = a;
 			g_pHyprRenderer->m_renderPass.add(makeUnique<CBorderPassElement>(borderData));
