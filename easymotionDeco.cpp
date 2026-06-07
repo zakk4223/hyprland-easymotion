@@ -13,6 +13,8 @@
 
 #include "globals.hpp"
 
+using namespace Render::GL;
+
 CHyprEasyLabel::CHyprEasyLabel(PHLWINDOW pWindow, SMotionActionDesc *actionDesc) : IHyprWindowDecoration(pWindow) {
 	m_pWindow = pWindow;
 

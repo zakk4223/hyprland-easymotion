@@ -8,6 +8,14 @@
 #include <hyprland/src/Compositor.hpp>
 #include <hyprland/src/desktop/view/Window.hpp>
 #include <hyprland/src/config/ConfigManager.hpp>
+#include <hyprland/src/config/values/types/BoolValue.hpp>
+#include <hyprland/src/config/values/types/ColorValue.hpp>
+#include <hyprland/src/config/values/types/CssGapValue.hpp>
+#include <hyprland/src/config/values/types/GradientValue.hpp>
+#include <hyprland/src/config/values/types/FloatValue.hpp>
+#include <hyprland/src/config/values/types/IntValue.hpp>
+#include <hyprland/src/config/values/types/StringValue.hpp>
+#include <hyprland/src/config/shared/parserUtils/ParserUtils.hpp>
 #include <hyprland/src/managers/EventManager.hpp>
 #include <hyprland/src/managers/input/InputManager.hpp>
 #include <hyprland/src/event/EventBus.hpp>
@@ -19,6 +27,22 @@
 #include "globals.hpp"
 
 using namespace Hyprutils::String;
+using namespace Render::GL;
+
+static struct {
+	SP<Config::Values::CStringValue> motionKeys, motionLabels, textFont;
+	SP<Config::Values::CIntValue> textSize;
+	SP<Config::Values::CColorValue> textColor, bgColor;
+	SP<Config::Values::CCssGapValue> textPadding;
+	SP<Config::Values::CIntValue> borderSize;
+	SP<Config::Values::CGradientValue> borderColor;
+	SP<Config::Values::CIntValue> rounding;
+	SP<Config::Values::CBoolValue> blur;
+	SP<Config::Values::CFloatValue> blurA;
+	SP<Config::Values::CBoolValue> xray;
+	SP<Config::Values::CStringValue> fullscreenAction;
+	SP<Config::Values::CBoolValue> onlySpecial;
+} configValues;
 
 // Do NOT change this function.
 APICALL EXPORT std::string PLUGIN_API_VERSION() {
@@ -109,7 +133,7 @@ static bool parseBorderGradient(std::string VALUE, Config::CGradientValueData *D
 		}
 
 		try {
-			DATA->m_colors.push_back(CHyprColor(configStringToInt(var).value_or(0)));
+			DATA->m_colors.push_back(CHyprColor(Config::ParserUtils::parseColor(var).value_or(0)));
 		} catch (std::exception& e) {
 			Log::logger->log(Log::WARN, "Error parsing gradient {}", V);
 		}
@@ -126,96 +150,74 @@ static bool parseBorderGradient(std::string VALUE, Config::CGradientValueData *D
 
 SDispatchResult easymotionDispatch(std::string args)
 {
-	static auto *const TEXTSIZE = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textsize")->getDataStaticPtr();
-
-	static auto *const TEXTCOLOR = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textcolor")->getDataStaticPtr();
-	static auto *const BGCOLOR = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:bgcolor")->getDataStaticPtr();
-	static auto *const TEXTFONT = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textfont")->getDataStaticPtr();
-	static auto *const TEXTPADDING = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:textpadding")->getDataStaticPtr();
-	static auto *const BORDERSIZE = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:bordersize")->getDataStaticPtr();
-	static auto *const BORDERCOLOR = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:bordercolor")->getDataStaticPtr();
-	static auto *const ROUNDING = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:rounding")->getDataStaticPtr();
-	static auto *const BLUR = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blur")->getDataStaticPtr();
-	static auto *const XRAY = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:xray")->getDataStaticPtr();
-	static auto *const BLURA = (Hyprlang::FLOAT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:blurA")->getDataStaticPtr();
-	static auto *const MOTIONKEYS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionkeys")->getDataStaticPtr();
-	static auto *const MOTIONLABELS = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:motionlabels")->getDataStaticPtr();
-	static auto *const FSACTION = (Hyprlang::STRING const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action")->getDataStaticPtr();
-	static auto *const ONLYSPECIAL = (Hyprlang::INT* const *)HyprlandAPI::getConfigValue(PHANDLE, "plugin:easymotion:only_special")->getDataStaticPtr();
-
-
 	CVarList emargs(args, 0, ',');
 	SMotionActionDesc actionDesc;
 
-	actionDesc.textSize = **TEXTSIZE;
-	actionDesc.textColor = **TEXTCOLOR;
-	actionDesc.backgroundColor = **BGCOLOR;
-	actionDesc.textFont = *TEXTFONT;
-	CVarList2 cpadding = CVarList2(*TEXTPADDING);
-	actionDesc.boxPadding.parseGapData(cpadding);
-	actionDesc.rounding = **ROUNDING;
-	actionDesc.borderSize = **BORDERSIZE;
-	if(!parseBorderGradient(*BORDERCOLOR, &actionDesc.borderColor)) {
-		actionDesc.borderColor.m_colors.clear();
-		actionDesc.borderColor.m_angle = 0;
-	}
-	actionDesc.motionKeys = *MOTIONKEYS;
-	actionDesc.motionLabels = *MOTIONLABELS;
-	actionDesc.blur = **BLUR;
-	actionDesc.xray = **XRAY;
-	actionDesc.blurA = **BLURA;
-	actionDesc.fullscreen_action = std::string(*FSACTION);
-	actionDesc.only_special = **ONLYSPECIAL;
+	actionDesc.textSize = configValues.textSize->value();
+	actionDesc.textColor = configValues.textColor->value();
+	actionDesc.backgroundColor = configValues.bgColor->value();
+	actionDesc.textFont = configValues.textFont->value();
+	actionDesc.boxPadding = configValues.textPadding->value();
+	actionDesc.rounding = configValues.rounding->value();
+	actionDesc.borderSize = configValues.borderSize->value();
+	actionDesc.borderColor = configValues.borderColor->value();
+	actionDesc.motionKeys = configValues.motionKeys->value();
+	actionDesc.motionLabels = configValues.motionLabels->value();
+	actionDesc.blur = configValues.blur->value();
+	actionDesc.xray = configValues.xray->value();
+	actionDesc.blurA = configValues.blurA->value();
+	actionDesc.fullscreen_action = configValues.fullscreenAction->value();
+	actionDesc.only_special = configValues.onlySpecial->value();
 
 
 	for(size_t i = 0; i < emargs.size(); i++)
-	{
-		CVarList kv(emargs[i], 2, ':');
-		if (kv[0] == "action") {
-			actionDesc.commandString = kv[1];
-		} else if (kv[0] == "textsize") {
-			actionDesc.textSize = configStringToInt(kv[1]).value_or(15);
-		} else if (kv[0] == "textcolor") {
-			actionDesc.textColor = CHyprColor(configStringToInt(kv[1]).value_or(0xffffffff));
-		} else if (kv[0] == "bgcolor") {
-			actionDesc.backgroundColor = CHyprColor(configStringToInt(kv[1]).value_or(0));
-		} else if (kv[0] == "textfont") {
-			actionDesc.textFont = kv[1];
-		} else if (kv[0] == "textpadding") {
-			CVarList2 padVars = CVarList2(kv[1], 0, 's');
-			actionDesc.boxPadding.parseGapData(padVars);
-		} else if (kv[0] == "rounding") {
-			actionDesc.rounding = configStringToInt(kv[1]).value_or(0);
-		} else if (kv[0] == "bordersize") {
-			actionDesc.borderSize = configStringToInt(kv[1]).value_or(0);
-		} else if (kv[0] == "bordercolor") {
-			CVarList varlist(kv[1], 0, 's');
-			actionDesc.borderColor.m_colors.clear();
-			actionDesc.borderColor.m_angle = 0;
-			if(!parseBorderGradient(kv[1], &actionDesc.borderColor)) {
+		{
+			CVarList kv(emargs[i], 2, ':');
+			if (kv[0] == "action") {
+				actionDesc.commandString = kv[1];
+			} else if (kv[0] == "textsize") {
+				actionDesc.textSize = Config::ParserUtils::parseInt(kv[1]).value_or(15);
+			} else if (kv[0] == "textcolor") {
+				actionDesc.textColor = CHyprColor(Config::ParserUtils::parseColor(kv[1]).value_or(0xffffffff));
+			} else if (kv[0] == "bgcolor") {
+				actionDesc.backgroundColor = CHyprColor(Config::ParserUtils::parseColor(kv[1]).value_or(0));
+			} else if (kv[0] == "textfont") {
+				actionDesc.textFont = kv[1];
+			} else if (kv[0] == "textpadding") {
+				CVarList2 padVars = CVarList2(kv[1], 0, 's');
+				actionDesc.boxPadding.parseGapData(padVars);
+			} else if (kv[0] == "rounding") {
+				actionDesc.rounding = Config::ParserUtils::parseInt(kv[1]).value_or(0);
+			} else if (kv[0] == "bordersize") {
+				actionDesc.borderSize = Config::ParserUtils::parseInt(kv[1]).value_or(0);
+			} else if (kv[0] == "bordercolor") {
+				CVarList varlist(kv[1], 0, 's');
 				actionDesc.borderColor.m_colors.clear();
 				actionDesc.borderColor.m_angle = 0;
+				if(!parseBorderGradient(kv[1], &actionDesc.borderColor)) {
+					actionDesc.borderColor.m_colors.clear();
+					actionDesc.borderColor.m_angle = 0;
+				}
+			} else if (kv[0] == "motionkeys") {
+				actionDesc.motionKeys = kv[1];
+			} else if (kv[0] == "motionlabels") {
+				actionDesc.motionLabels = kv[1];
+			} else if (kv[0] == "blur") {
+				actionDesc.blur = Config::ParserUtils::parseInt(kv[1]).value_or(1);
+			} else if (kv[0] == "xray") {
+				actionDesc.xray = Config::ParserUtils::parseInt(kv[1]).value_or(1);
+			} else if (kv[0] == "blurA") {
+				try {
+					actionDesc.blurA = std::stof(kv[1]);
+				} catch (const std::invalid_argument& ia) {
+					actionDesc.blurA = 1.0f;
+				}
+			} else if (kv[0] == "fullscreen_action") {
+				actionDesc.fullscreen_action = kv[1];
+			} else if (kv[0] == "only_special") {
+				actionDesc.only_special = Config::ParserUtils::parseInt(kv[1]).value_or(1);
 			}
-		} else if (kv[0] == "motionkeys") {
-			actionDesc.motionKeys = kv[1];
-		} else if (kv[0] == "motionlabels") {
-			actionDesc.motionLabels = kv[1];
-		} else if (kv[0] == "blur") {
-			actionDesc.blur = configStringToInt(kv[1]).value_or(1);
-		} else if (kv[0] == "xray") {
-			actionDesc.xray = configStringToInt(kv[1]).value_or(1);
-		} else if (kv[0] == "blurA") {
-			try {
-				actionDesc.blurA = std::stof(kv[1]);
-			} catch (const std::invalid_argument& ia) {
-				actionDesc.blurA = 1.0f;
-			}
-		} else if (kv[0] == "fullscreen_action") {
-			actionDesc.fullscreen_action = kv[1];
-		} else if (kv[0] == "only_special") {
-			actionDesc.only_special = configStringToInt(kv[1]).value_or(1);
 		}
-	}
 
 	if (actionDesc.motionLabels.size() == 0) {
 		actionDesc.motionLabels = actionDesc.motionKeys;
@@ -277,23 +279,37 @@ bool oneasymotionKeypress(const IKeyboard::SKeyEvent& ev) {
 APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 	PHANDLE = handle;
 
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textsize", Hyprlang::INT{15});
+	configValues.motionKeys = makeShared<Config::Values::CStringValue>("plugin:easymotion:motionkeys", "which keys to use for selecting windows", "abcdefghijklmnopqrstuvwxyz1234567890");
+	configValues.motionLabels = makeShared<Config::Values::CStringValue>("plugin:easymotion:motionlabels", "which keys to use for labeling windows", "");
+	configValues.textFont = makeShared<Config::Values::CStringValue>("plugin:easymotion:textfont", "font face for window label text", "Sans");
+	configValues.textSize = makeShared<Config::Values::CIntValue>("plugin:easymotion:textsize", "font size of window label text", 15, Config::Values::SIntValueOptions{.min = 1} );
+	configValues.textColor = makeShared<Config::Values::CColorValue>("plugin:easymotion:textcolor", "color of window label text", 0xffffffff);
+	configValues.bgColor = makeShared<Config::Values::CColorValue>("plugin:easymotion:bgcolor", "background color of window label", 0x000000ff);
+	configValues.textPadding = makeShared<Config::Values::CCssGapValue>("plugin:easymotion:textpadding", "padding around window label text", 0);
+	configValues.borderSize = makeShared<Config::Values::CIntValue>("plugin:easymotion:bordersize", "size of window label border", 0);
+	configValues.borderColor = makeShared<Config::Values::CGradientValue>("plugin:easymotion:bordercolor", "color of window label border", 0xffffffff);
+	configValues.rounding = makeShared<Config::Values::CIntValue>("plugin:easymotion:rounding", "rounding radius of window label corners", 0);
+	configValues.blur = makeShared<Config::Values::CBoolValue>("plugin:easymotion:blur", "whether to blur under window label", false);
+	configValues.blurA = makeShared<Config::Values::CFloatValue>("plugin:easymotion:blurA", "window label blur alpha", 1.F, Config::Values::SFloatValueOptions{.min = 0.F, .max = 1.F} );
+	configValues.xray = makeShared<Config::Values::CBoolValue>("plugin:easymotion:xrap", "window label blur xray", false);
+	configValues.fullscreenAction = makeShared<Config::Values::CStringValue>("plugin:easymotion:fullscreen_action", "what to do if a window is fullscreen", "none");
+	configValues.onlySpecial = makeShared<Config::Values::CBoolValue>("plugin:easymotion:only_special", "if monitor has a special workspace focused, label its windows only", true);
 
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textcolor", Hyprlang::INT{configStringToInt("rgba(ffffffff)").value_or(0xffffffff)});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bgcolor", Hyprlang::INT{configStringToInt("rgba(000000ff)").value_or(0xff)});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textfont", Hyprlang::STRING{"Sans"});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:textpadding", Hyprlang::STRING{"0"});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bordersize", Hyprlang::INT{0});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:bordercolor", Hyprlang::STRING{"rgba(ffffffff)"});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:rounding", Hyprlang::INT{0});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:blur", Hyprlang::INT{0});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:blurA", Hyprlang::FLOAT{1.0f});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:xray", Hyprlang::INT{0});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:motionkeys", Hyprlang::STRING{"abcdefghijklmnopqrstuvwxyz1234567890"});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:motionlabels", Hyprlang::STRING{""});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:fullscreen_action", Hyprlang::STRING{"none"});
-	HyprlandAPI::addConfigValue(PHANDLE, "plugin:easymotion:only_special", Hyprlang::INT{1});
-
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.onlySpecial);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.motionKeys);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.motionLabels);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.textFont);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.textSize);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.textColor);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.bgColor);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.textPadding);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.borderSize);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.borderColor);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.rounding);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.blur);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.blurA);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.xray);
+	HyprlandAPI::addConfigValueV2(PHANDLE, configValues.fullscreenAction);
 
 	g_pGlobalState = makeUnique<SGlobalState>();
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotion", easymotionDispatch);

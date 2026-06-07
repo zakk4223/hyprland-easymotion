@@ -21,13 +21,13 @@ struct SMotionActionDesc {
 	int borderSize = 0;
 	Config::CGradientValueData borderColor = Config::CGradientValueData();
 	int rounding = 0;
-	int blur = 0;
-	int xray = 0;
+	bool blur = false;
+	bool xray = false;
 	float blurA = 1.0f;
 	std::string motionKeys = "abcdefghijklmnopqrstuvwxyz1234567890";
 	std::string motionLabels = "";
 	std::string fullscreen_action = "none";
-	int only_special = 1;
+	bool only_special = true;
 };
 
 inline UP<SGlobalState> g_pGlobalState;
