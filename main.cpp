@@ -23,6 +23,10 @@
 #include <hyprutils/string/VarList.hpp>
 #include <strings.h>
 
+extern "C" {
+#include <lua.h>
+}
+
 #include "easymotionDeco.hpp"
 #include "globals.hpp"
 
@@ -65,10 +69,23 @@ SDispatchResult easymotionExitDispatch(std::string args)
 
 SDispatchResult easymotionActionDispatch(std::string args)
 {
+	auto runAction = [](const std::string& cmd) {
+		if (cmd.starts_with("dispatch:")) {
+			auto rest = cmd.substr(9);
+			auto sp = rest.find(' ');
+			auto name = sp != std::string::npos ? rest.substr(0, sp) : rest;
+			auto arg  = sp != std::string::npos ? rest.substr(sp + 1) : std::string{};
+			auto it = g_pKeybindManager->m_dispatchers.find(name);
+			if (it != g_pKeybindManager->m_dispatchers.end())
+				it->second(arg);
+		} else {
+			g_pKeybindManager->m_dispatchers["exec"](cmd);
+		}
+	};
 	for (auto &ml : g_pGlobalState->motionLabels) {
 		if (ml->m_szKey == args) {
 			g_pEventManager->postEvent(SHyprIPCEvent{"easymotionselect", std::format("{},{}", ml->m_szWindowAddress, ml->m_szKey)});
-			g_pKeybindManager->m_dispatchers["exec"](ml->m_szActionCmd);
+			runAction(ml->m_szActionCmd);
 			easymotionExitDispatch("");
 			break;
 		}
@@ -251,6 +268,12 @@ SDispatchResult easymotionDispatch(std::string args)
 	return {};
 }
 
+static int easymotionLuaDispatch(lua_State* L) {
+	const char* arg = lua_isstring(L, 1) ? lua_tostring(L, 1) : "";
+	easymotionDispatch(std::string(arg));
+	return 0;
+}
+
 bool oneasymotionKeypress(const IKeyboard::SKeyEvent& ev) {
 	if (g_pGlobalState->motionLabels.empty()) return false;
 	if (g_pInputManager->m_keyboards.empty()) return false;
@@ -315,6 +338,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotion", easymotionDispatch);
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionaction", easymotionActionDispatch);
 	HyprlandAPI::addDispatcherV2(PHANDLE, "easymotionexit", easymotionExitDispatch);
+	HyprlandAPI::addLuaFunction(PHANDLE, "easymotion", "dispatch", easymotionLuaDispatch);
 	static auto KPHOOK = Event::bus()->m_events.input.keyboard.key.listen([&](IKeyboard::SKeyEvent ev, Event::SCallbackInfo& info) {
 		info.cancelled = oneasymotionKeypress(ev);
 	});
