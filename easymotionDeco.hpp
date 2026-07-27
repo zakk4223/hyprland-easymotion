@@ -8,6 +8,7 @@
 #include <hyprland/src/devices/IKeyboard.hpp>
 #include <hyprland/src/desktop/Workspace.hpp>
 #include <hyprland/src/render/gl/GLTexture.hpp>
+#include <hyprland/src/managers/fullscreen/FullscreenController.hpp>
 #include "globals.hpp"
 
 class CHyprEasyLabel : public IHyprWindowDecoration {
@@ -57,10 +58,7 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 		int                                m_iBorderSize;
 		Config::CGradientValueData	   m_cBorderGradient;
 		WP<CHyprEasyLabel>                 m_self;
-		eFullscreenMode                    m_origFSMode;
-
-
-
+		Fullscreen::eFullscreenMode        m_origFSMode;
 
 
 	private:
@@ -70,11 +68,11 @@ class CHyprEasyLabel : public IHyprWindowDecoration {
 
 		PHLWINDOWREF             m_pWindow;
 
-		SP<CGLTexture>           m_tTextTex;
+		SP<Render::GL::CGLTexture>           m_tTextTex;
 
 		bool                     m_bWindowSizeChanged = false;
 
-		void                     renderText(CGLTexture& out, const std::string& text, const CHyprColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
+		void                     renderText(Render::GL::CGLTexture& out, const std::string& text, const CHyprColor& color, const Vector2D& bufferSize, const float scale, const int fontSize);
 		CBox                     assignedBoxGlobal();
 		void                     renderMotionString(Vector2D& bufferSize, const float scale);
 

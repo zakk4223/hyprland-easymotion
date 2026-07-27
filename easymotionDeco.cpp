@@ -58,7 +58,7 @@ std::string CHyprEasyLabel::getDisplayName() {
 }
 
 void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale) {
-	m_tTextTex = makeShared<CGLTexture>();
+	m_tTextTex = makeShared<Render::GL::CGLTexture>();
 	int textSize = m_iTextSize;
 	const auto scaledSize = textSize * scale;
 	const auto textColor = CHyprColor(m_cTextColor);
@@ -115,9 +115,6 @@ void CHyprEasyLabel::renderMotionString(Vector2D& bufferSize, const float scale)
 	cairo_destroy(LAYOUTCAIRO);
 	cairo_destroy(CAIRO);
 	cairo_surface_destroy(CAIROSURFACE);
-
-	//renderText doesn't use ink_rect, but logical_rect. Makes the rectangle too tall
-	//m_tTextTex = g_pHyprOpenGL->renderText(m_szLabel, m_cTextColor, textSize, false, m_szTextFont, bufferSize.x-2);
 }
 
 
@@ -132,7 +129,6 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 	const auto WORKSPACEOFFSET = PWORKSPACE && !PWINDOW->m_pinned ? PWORKSPACE->m_renderOffset->value() : Vector2D();
 	const auto DECOBOX = assignedBoxGlobal();
 	const auto BARBUF = DECOBOX.size() * pMonitor->m_scale;
-	//CBox       motionBox = {DECOBOX.x - pMonitor->vecPosition.x, DECOBOX.y - pMonitor->vecPosition.y, DECOBOX.w,
 	
 	auto TEXTBUF = DECOBOX.size();
 
@@ -158,8 +154,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 	rectData.round = m_iRounding * pMonitor->m_scale;
 	rectData.roundingPower = 2.0;
 
-
-	g_pHyprRenderer->m_renderPass.add(makeUnique<CRectPassElement>(rectData));
+	g_pHyprRenderer->addPassElement(makeUnique<CRectPassElement>(rectData));
 	if (m_iBorderSize) {
 		CBox       borderBox = {DECOBOX.x, DECOBOX.y, static_cast<double>(layoutWidth), static_cast<double>(layoutHeight)};
 		borderBox.translate(pMonitor->m_position*-1).scale(pMonitor->m_scale).round();
@@ -171,8 +166,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 			borderData.roundingPower = 2.0;
 			borderData.borderSize = m_iBorderSize;
 			borderData.a = a;
-			g_pHyprRenderer->m_renderPass.add(makeUnique<CBorderPassElement>(borderData));
-			//g_pHyprOpenGL->renderBorder(borderBox, m_cBorderGradient, scaledRounding, m_iBorderSize * pMonitor->scale, a);
+			g_pHyprRenderer->addPassElement(makeUnique<CBorderPassElement>(borderData));
 		}
 	}
 	
@@ -181,8 +175,7 @@ void CHyprEasyLabel::draw(PHLMONITOR pMonitor, float const &a) {
 	texData.tex = m_tTextTex;
 	texData.box = motionBox;
 
-
-	g_pHyprRenderer->m_renderPass.add(makeUnique<CTexPassElement>(texData));
+	g_pHyprRenderer->addPassElement(makeUnique<CTexPassElement>(texData));
 }
 
 eDecorationType CHyprEasyLabel::getDecorationType() {
@@ -212,11 +205,11 @@ CBox CHyprEasyLabel::assignedBoxGlobal() {
 	const auto PWINDOW = m_pWindow.lock();
 	double boxHeight, boxWidth;
 	double boxSize;
-	boxHeight = PWINDOW->m_realSize->value().y * 0.10;
-	boxWidth = PWINDOW->m_realSize->value().x * 0.10;
+	boxHeight = PWINDOW->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT).y * 0.10;
+	boxWidth = PWINDOW->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT).x * 0.10;
 	boxSize = std::min(boxHeight, boxWidth);
-	double boxX = PWINDOW->m_realPosition->value().x + (PWINDOW->m_realSize->value().x-boxSize)/2;
-	double boxY = PWINDOW->m_realPosition->value().y + (PWINDOW->m_realSize->value().y-boxSize)/2;
+	double boxX = PWINDOW->position(Desktop::View::IGeometric::GEOMETRIC_CURRENT).x + (PWINDOW->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT).x-boxSize)/2;
+	double boxY = PWINDOW->position(Desktop::View::IGeometric::GEOMETRIC_CURRENT).y + (PWINDOW->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT).y-boxSize)/2;
 	CBox box = {boxX, boxY, boxSize, boxSize};
 
 	const auto PWORKSPACE      = PWINDOW->m_workspace;
